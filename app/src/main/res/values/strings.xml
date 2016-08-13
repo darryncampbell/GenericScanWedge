@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Datawedge Lite</string>
+    <string name="title_activity_main">DataWedge Profiles</string>
+    <string name="title_activity_tempactivity">tempactivity</string>
+    <string name="title_activity_profile_configuration">ProfileConfiguration</string>
+</resources>
