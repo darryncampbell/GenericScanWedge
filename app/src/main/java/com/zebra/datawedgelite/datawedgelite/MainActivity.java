@@ -6,14 +6,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,7 +25,9 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    static final String LOG_CATEGORY = "DWAPI Lite";
     private ArrayList<Profile> profiles = new ArrayList<>();
+    private ProfilesListAdapter profilesListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +47,61 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                profilesListAdapter.add(new Profile("New Profile"));
+                profilesListAdapter.notifyDataSetChanged();
+                saveProfiles(profiles, getApplicationContext());
             }
         });
 
         //  Populate the profiles available
-        profiles.add(new Profile("Profile0 (Default)"));
-        profiles.add(new Profile("Barcode Disabled"));
+//        profiles.add(new Profile("Profile0 (Default)"));
+//        profiles.add(new Profile("Barcode Disabled"));
 
-        //  TESTING
+
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Log.v(LOG_CATEGORY, "Resume");
+        //  Read the profiles here and populate the UI
         try {
-            FileOutputStream fos = getApplicationContext().openFileOutput("testFile", Context.MODE_PRIVATE);
+            FileInputStream fis = getApplicationContext().openFileInput("testFile");
+            ObjectInputStream is = null;
+            is = new ObjectInputStream(fis);
+            ArrayList<Profile> profiles = (ArrayList<Profile>) is.readObject();
+            if (profiles != null && profiles.size() > 0)
+            {
+                //Toast.makeText(context, "Read Profile: " + profiles.get(0).getName(), Toast.LENGTH_SHORT).show();
+                Log.d(LOG_CATEGORY, "Read Profile: " + profiles.get(0).getName());
+                this.profiles = profiles;
+            }
+            else
+            {
+                //this.profiles = ;
+                profiles.add(new Profile("Profile0 (Default)"));
+            }
+            ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
+            profilesListAdapter = new ProfilesListAdapter(this, this.profiles);
+            profilesListView.setAdapter(profilesListAdapter);
+
+            is.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            //  todo - what if there is no file at startup?  I.e. on first run
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void saveProfiles(ArrayList<Profile> profiles, Context context)
+    {
+        //  todo - make "testFile" a global constant in strings.xml
+        try {
+            FileOutputStream fos = context.openFileOutput("testFile", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(profiles);
             os.close();
@@ -61,11 +109,5 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //  END TESTING
-
-        ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
-        profilesListView.setAdapter(new ProfilesListAdapter(this, profiles));
     }
-
-
 }
