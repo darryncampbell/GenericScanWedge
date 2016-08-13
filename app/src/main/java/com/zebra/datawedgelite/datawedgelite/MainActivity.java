@@ -1,5 +1,6 @@
 package com.zebra.datawedgelite.datawedgelite;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,9 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,6 +50,19 @@ public class MainActivity extends AppCompatActivity {
         //  Populate the profiles available
         profiles.add(new Profile("Profile0 (Default)"));
         profiles.add(new Profile("Barcode Disabled"));
+
+        //  TESTING
+        try {
+            FileOutputStream fos = getApplicationContext().openFileOutput("testFile", Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(profiles);
+            os.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //  END TESTING
+
         ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
         profilesListView.setAdapter(new ProfilesListAdapter(this, profiles));
     }

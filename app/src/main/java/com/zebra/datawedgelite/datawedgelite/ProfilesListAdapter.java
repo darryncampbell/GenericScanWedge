@@ -43,10 +43,11 @@ public class ProfilesListAdapter extends ArrayAdapter<Profile> {
         textViewTitle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view)
             {
-                Toast.makeText(context, "Clicked: " + values.get(position).getName(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Clicked: " + values.get(position).getName(), Toast.LENGTH_SHORT).show();
                 Intent configureProfile = new Intent(context, ProfileConfiguration.class);
                 //  todo add profile to the extras
-                configureProfile.putExtra("profileObject", (Serializable) values.get(position));
+                configureProfile.putExtra("profileObjects", (Serializable) values);
+                configureProfile.putExtra("profilePosition", position);
                 context.startActivity(configureProfile);
             }
             public void onNothingSelected(AdapterView parentView) {}

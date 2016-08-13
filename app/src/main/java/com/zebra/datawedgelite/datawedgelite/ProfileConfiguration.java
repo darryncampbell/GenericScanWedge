@@ -8,6 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class ProfileConfiguration extends AppCompatActivity {
 
     @Override
@@ -19,7 +21,9 @@ public class ProfileConfiguration extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        Profile profile = (Profile)getIntent().getSerializableExtra("profileObject");
+        ArrayList<Profile> profiles = (ArrayList<Profile>)getIntent().getSerializableExtra("profileObjects");
+        int position = getIntent().getIntExtra("profilePosition", 0);
+        Profile profile = profiles.get(position);
         if (profile != null)
         {
             getSupportActionBar().setTitle("Configure Profile: " + profile.getName());

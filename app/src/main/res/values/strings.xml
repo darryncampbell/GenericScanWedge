@@ -3,4 +3,9 @@
     <string name="title_activity_main">DataWedge Profiles</string>
     <string name="title_activity_tempactivity">tempactivity</string>
     <string name="title_activity_profile_configuration">ProfileConfiguration</string>
+    <string-array name="intent_output_mechanism">
+        <item>Send via startActivity</item>
+        <item>Send via startService</item>
+        <item>Broadcast intent</item>
+    </string-array>
 </resources>
