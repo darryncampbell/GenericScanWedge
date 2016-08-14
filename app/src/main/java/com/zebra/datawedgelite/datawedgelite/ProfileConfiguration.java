@@ -6,16 +6,29 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-public class ProfileConfiguration extends AppCompatActivity {
+public class ProfileConfiguration extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
+
+    //  The list of all profiles (passed via Intent)
+    ArrayList<Profile> profiles;
+    //  The position in the profiles array which corresponds with the profile we are to display
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +39,8 @@ public class ProfileConfiguration extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        final ArrayList<Profile> profiles = (ArrayList<Profile>)getIntent().getSerializableExtra("profileObjects");
-        final int position = getIntent().getIntExtra("profilePosition", 0);
+        profiles = (ArrayList<Profile>)getIntent().getSerializableExtra("profileObjects");
+        position = getIntent().getIntExtra("profilePosition", 0);
         Profile profile = profiles.get(position);
         if (profile != null)
         {
@@ -43,16 +56,138 @@ public class ProfileConfiguration extends AppCompatActivity {
             }
         });
 
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        EditText editTextProfileName = (EditText) findViewById(R.id.editProfileName);
+        editTextProfileName.setText(this.profiles.get(position).getName());
+        editTextProfileName.addTextChangedListener(new TextWatcher()
+        {
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                profiles.get(position).setName(s.toString());
             }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void afterTextChanged(Editable s) {}
         });
-        */
+
+        CheckBox profileEnabledCheck = (CheckBox) findViewById(R.id.checkProfileEnabled);
+        profileEnabledCheck.setChecked(this.profiles.get(position).getProfileEnabled());
+        profileEnabledCheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileBarcodeEnabledCheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeEnabled);
+        profileBarcodeEnabledCheck.setChecked(this.profiles.get(position).isBarcodeInputEnabled());
+        profileBarcodeEnabledCheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderUPCACheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeUPCA);
+        profileDecoderUPCACheck.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_UPCA));
+        profileDecoderUPCACheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderUPCECheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeUPCE);
+        profileDecoderUPCECheck.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_UPCE));
+        profileDecoderUPCECheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderEAN8Check = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeEan8);
+        profileDecoderEAN8Check.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_EAN8));
+        profileDecoderEAN8Check.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderEAN13Check = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeEan13);
+        profileDecoderEAN13Check.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_EAN13));
+        profileDecoderEAN13Check.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderRSS14Check = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeRSS14);
+        profileDecoderRSS14Check.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_RSS14));
+        profileDecoderRSS14Check.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderCode39Check = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeCode39);
+        profileDecoderCode39Check.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_CODE_39));
+        profileDecoderCode39Check.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderCode93Check = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeCode93);
+        profileDecoderCode93Check.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_CODE_93));
+        profileDecoderCode93Check.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderCode128Check = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeCode128);
+        profileDecoderCode128Check.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_CODE_128));
+        profileDecoderCode128Check.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderITFCheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeITF);
+        profileDecoderITFCheck.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_ITF));
+        profileDecoderITFCheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderRSSExpandedCheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeRSSExpanded);
+        profileDecoderRSSExpandedCheck.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_RSS_Expanded));
+        profileDecoderRSSExpandedCheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderQRCodeCheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeQRCode);
+        profileDecoderQRCodeCheck.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_QR_CODE));
+        profileDecoderQRCodeCheck.setOnCheckedChangeListener(this);
+
+        CheckBox profileDecoderDataMatrixCheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeDataMatrix);
+        profileDecoderDataMatrixCheck.setChecked(this.profiles.get(position).isDecoderEnabled(Profile.DECODER_DATA_MATRIX));
+        profileDecoderDataMatrixCheck.setOnCheckedChangeListener(this);
+
+        EditText editTextIntentAction = (EditText) findViewById(R.id.editIntentAction);
+        editTextIntentAction.setText(profiles.get(position).getIntentAction());
+        editTextIntentAction.addTextChangedListener(new TextWatcher()
+        {
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                profiles.get(position).setIntentAction(s.toString());
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void afterTextChanged(Editable s) {}
+        });
+
+        EditText editTextIntentCategory = (EditText) findViewById(R.id.editIntentCategory);
+        editTextIntentCategory.setText(profiles.get(position).getIntentCategory());
+        editTextIntentCategory.addTextChangedListener(new TextWatcher()
+        {
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                profiles.get(position).setIntentCategory(s.toString());
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void afterTextChanged(Editable s) {}
+        });
+
+        final Spinner spinnerIntentOutputMechanism = (Spinner) findViewById(R.id.spinnerIntentOutputMechanism);
+        switch (profiles.get(position).getIntentDelivery())
+        {
+            case INTENT_DELIVERY_START_ACTIVITY:
+                spinnerIntentOutputMechanism.setSelection(0);
+                break;
+            case INTENT_DELIVERY_START_SERVICE:
+                spinnerIntentOutputMechanism.setSelection(1);
+                break;
+            case INTENT_DELIVERY_BROADCAST_INTENT:
+                spinnerIntentOutputMechanism.setSelection(2);
+                break;
+        }
+        spinnerIntentOutputMechanism.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+
+                String selectedMechanism = spinnerIntentOutputMechanism.getSelectedItem().toString();
+                if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.intent_mechanism_start_activity)))
+                {
+                    profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_START_ACTIVITY);
+                }
+                else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.intent_mechanism_start_service)))
+                {
+                    profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_START_SERVICE);
+                }
+                else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.intent_mechanism_broadcast_intent)))
+                {
+                    profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_BROADCAST_INTENT);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        //  todo Also need a 'Receiver foreground flag' checkbox which is only enabled for Broadcast intents.
+
     }
 
     @Override
@@ -66,5 +201,74 @@ public class ProfileConfiguration extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        //  Back up the profiles
+        MainActivity.saveProfiles(this.profiles, getApplicationContext());
+    }
 
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        //  Back up the profiles
+        //MainActivity.saveProfiles(this.profiles, getApplicationContext());
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        switch(compoundButton.getId()){
+            case R.id.checkProfileEnabled:
+                //  Only one profile can be enabled at a time in this limited implementation of DW profiles,
+                //  therefore disable all other profiles
+                if (b)
+                {
+                    for (int i = 0; i < this.profiles.size(); i++)
+                        this.profiles.get(i).setProfileEnabled(false);
+                }
+                this.profiles.get(this.position).setProfileEnabled(b);
+                break;
+            case R.id.checkConfigureProfileBarcodeEnabled:
+                this.profiles.get(this.position).setBarcodeInputEnabled(b);
+                break;
+            case R.id.checkConfigureProfileBarcodeUPCA:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_UPCA, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeUPCE:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_UPCE, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeEan8:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_EAN8, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeEan13:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_EAN13, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeRSS14:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_RSS14, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeCode39:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_39, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeCode93:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_93, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeCode128:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_128, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeITF:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_ITF, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeRSSExpanded:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_RSS_Expanded, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeQRCode:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_QR_CODE, b);
+                break;
+            case R.id.checkConfigureProfileBarcodeDataMatrix:
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_DATA_MATRIX, b);
+               break;
+        }
+    }
 }

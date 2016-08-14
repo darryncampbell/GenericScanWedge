@@ -3,9 +3,16 @@
     <string name="title_activity_main">DataWedge Profiles</string>
     <string name="title_activity_tempactivity">tempactivity</string>
     <string name="title_activity_profile_configuration">ProfileConfiguration</string>
+    <string name="intent_mechanism_start_activity">Send via startActivity</string>
+    <string name="intent_mechanism_start_service">Send via startService</string>
+    <string name="intent_mechanism_broadcast_intent">Broadcast intent</string>
+    <string name="profile_file_name">testFile</string>
+    <string name="enumerate_scanners_action">com.symbol.datawedge.api.ACTION_ENUMERATEDSCANNERLIST</string>
+    <string name="enumerate_scanners_key">DataWedgeAPI_KEY_ENUMERATEDSCANNERLIST</string>
+
     <string-array name="intent_output_mechanism">
-        <item>Send via startActivity</item>
-        <item>Send via startService</item>
-        <item>Broadcast intent</item>
+        <item>@string/intent_mechanism_start_activity</item>
+        <item>@string/intent_mechanism_start_service</item>
+        <item>@string/intent_mechanism_broadcast_intent</item>
     </string-array>
 </resources>

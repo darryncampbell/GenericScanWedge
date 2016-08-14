@@ -45,7 +45,6 @@ public class ProfilesListAdapter extends ArrayAdapter<Profile> {
             {
                 //Toast.makeText(context, "Clicked: " + values.get(position).getName(), Toast.LENGTH_SHORT).show();
                 Intent configureProfile = new Intent(context, ProfileConfiguration.class);
-                //  todo add profile to the extras
                 configureProfile.putExtra("profileObjects", (Serializable) values);
                 configureProfile.putExtra("profilePosition", position);
                 context.startActivity(configureProfile);

@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                profilesListAdapter.add(new Profile("New Profile"));
+                profilesListAdapter.add(new Profile("New Profile", false));
                 profilesListAdapter.notifyDataSetChanged();
                 saveProfiles(profiles, getApplicationContext());
             }
@@ -67,41 +67,41 @@ public class MainActivity extends AppCompatActivity {
         Log.v(LOG_CATEGORY, "Resume");
         //  Read the profiles here and populate the UI
         try {
-            FileInputStream fis = getApplicationContext().openFileInput("testFile");
+            FileInputStream fis = getApplicationContext().openFileInput(getResources().getString(R.string.profile_file_name));
             ObjectInputStream is = null;
             is = new ObjectInputStream(fis);
             ArrayList<Profile> profiles = (ArrayList<Profile>) is.readObject();
             if (profiles != null && profiles.size() > 0)
             {
-                //Toast.makeText(context, "Read Profile: " + profiles.get(0).getName(), Toast.LENGTH_SHORT).show();
-                Log.d(LOG_CATEGORY, "Read Profile: " + profiles.get(0).getName());
                 this.profiles = profiles;
             }
             else
             {
-                //this.profiles = ;
-                profiles.add(new Profile("Profile0 (Default)"));
+                profiles.add(new Profile("Profile0 (Default)", true));
             }
             ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
             profilesListAdapter = new ProfilesListAdapter(this, this.profiles);
             profilesListView.setAdapter(profilesListAdapter);
-
             is.close();
             fis.close();
+
         } catch (IOException e) {
-            e.printStackTrace();
-            //  todo - what if there is no file at startup?  I.e. on first run
+            profiles.add(new Profile("Profile0 (Default)", true));
+            ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
+            profilesListAdapter = new ProfilesListAdapter(this, this.profiles);
+            profilesListView.setAdapter(profilesListAdapter);
         }catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }finally
+        {
         }
 
     }
 
     public static void saveProfiles(ArrayList<Profile> profiles, Context context)
     {
-        //  todo - make "testFile" a global constant in strings.xml
         try {
-            FileOutputStream fos = context.openFileOutput("testFile", Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(context.getResources().getString(R.string.profile_file_name), Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(profiles);
             os.close();

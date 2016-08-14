@@ -8,9 +8,12 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class ZxingActivity extends AppCompatActivity {
 
-    private String intentAction;
+    private Profile activeProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,12 +21,38 @@ public class ZxingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_hiddenactivity);
 
         //  Expect the action for the return intent to be passed in
-        intentAction = getIntent().getStringExtra("intentAction");
-        //  todo would also expect decoder information to come from the DW profiles
+        activeProfile = (Profile) getIntent().getSerializableExtra("activeProfile");
 
         //  Launching Zebra Crossing
         IntentIntegrator integrator = new IntentIntegrator(this);
+        //  todo TEST THIS would also expect decoder information to come from the DW profiles
         //integrator.setDesiredBarcodeFormats(IntentIntegrator.PRODUCT_CODE_TYPES);
+        ArrayList<String> desiredDecoders = new ArrayList<String>();
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_UPCA))
+            desiredDecoders.add("UPC_A");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_UPCE))
+            desiredDecoders.add("UPC_E");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_EAN8))
+            desiredDecoders.add("EAN_8");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_EAN13))
+            desiredDecoders.add("EAN_13");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_RSS14))
+            desiredDecoders.add("RSS_14");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_CODE_39))
+            desiredDecoders.add("CODE_39");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_CODE_93))
+            desiredDecoders.add("CODE_93");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_CODE_128))
+            desiredDecoders.add("CODE_128");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_ITF))
+            desiredDecoders.add("ITF");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_RSS_Expanded))
+            desiredDecoders.add("RSS_EXPANDED");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_QR_CODE))
+            desiredDecoders.add("QR_CODE");
+        if (activeProfile.isDecoderEnabled(Profile.DECODER_DATA_MATRIX))
+            desiredDecoders.add("DATA_MATRIX");
+        integrator.setDesiredBarcodeFormats(desiredDecoders);
         //https://github.com/zxing/zxing/blob/master/android-integration/src/main/java/com/google/zxing/integration/android/IntentIntegrator.java
         integrator.initiateScan();
 
@@ -48,7 +77,7 @@ public class ZxingActivity extends AppCompatActivity {
                 startActivity(finishIntent);
             } else {
                 Intent barcodeIntent = new Intent();
-                barcodeIntent.setAction(this.intentAction);
+                barcodeIntent.setAction(this.activeProfile.getIntentAction());
                 barcodeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //  todo return a source like 'scanner-ZXing?' or keep consistent with Datawedge?
                 barcodeIntent.putExtra("com.symbol.datawedge.source", "scanner-zxing");
@@ -60,16 +89,12 @@ public class ZxingActivity extends AppCompatActivity {
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.label_type", scanResult.getFormatName());
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.data_string", scanResult.getContents());
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.decode_data", scanResult.getContents().getBytes());
-        //        barcodeIntent.addCategory("");
+                barcodeIntent.addCategory(this.activeProfile.getIntentCategory());
+                //  todo startActivity / startService etc depends on the delivery mechanism of the active profile
                 startActivity(barcodeIntent);
 
             }
         }
-        // else continue with any other code you need in the method
-        // TODO: 12/08/2016
-
-
-
         finish();
     }
 }

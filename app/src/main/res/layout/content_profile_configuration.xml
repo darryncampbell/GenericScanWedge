@@ -76,20 +76,20 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceLarge"
                             android:text="Profile Enabled"
-                            android:id="@+id/textView3" />
+                            android:id="@+id/txtProfileEnabled" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="Enable / disable this profile"
-                            android:id="@+id/textView2" />
+                            android:id="@+id/txtProfileEnabledHelp" />
                     </LinearLayout>
 
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/checkBox"
+                        android:id="@+id/checkProfileEnabled"
                         android:layout_gravity="center_vertical|right" />
 
                 </TableRow>
@@ -141,7 +141,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeEnabled"
+                        android:id="@+id/checkConfigureProfileBarcodeEnabled"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -177,7 +177,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeUPCA"
+                        android:id="@+id/checkConfigureProfileBarcodeUPCA"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -213,7 +213,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeUPCE"
+                        android:id="@+id/checkConfigureProfileBarcodeUPCE"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -249,7 +249,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeEan8"
+                        android:id="@+id/checkConfigureProfileBarcodeEan8"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -285,7 +285,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeEan13"
+                        android:id="@+id/checkConfigureProfileBarcodeEan13"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -321,7 +321,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeRSS14"
+                        android:id="@+id/checkConfigureProfileBarcodeRSS14"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -357,7 +357,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeCode39"
+                        android:id="@+id/checkConfigureProfileBarcodeCode39"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -393,7 +393,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeCode93"
+                        android:id="@+id/checkConfigureProfileBarcodeCode93"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -429,7 +429,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeCode128"
+                        android:id="@+id/checkConfigureProfileBarcodeCode128"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -465,7 +465,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeITF"
+                        android:id="@+id/checkConfigureProfileBarcodeITF"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -501,7 +501,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeRSSExpanded"
+                        android:id="@+id/checkConfigureProfileBarcodeRSSExpanded"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -537,7 +537,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeQRCode"
+                        android:id="@+id/checkConfigureProfileBarcodeQRCode"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -573,7 +573,7 @@
                     <CheckBox
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/chkConfigureProfileBarcodeDataMatrix"
+                        android:id="@+id/checkConfigureProfileBarcodeDataMatrix"
                         android:layout_gravity="center_vertical|right"
                         android:checked="true" />
 
@@ -618,7 +618,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/editText"
+                            android:id="@+id/editIntentAction"
                             android:text=""
                             />
                     </LinearLayout>
@@ -648,7 +648,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/editTextCategory"
+                            android:id="@+id/editIntentCategory"
                             android:text=""
                             />
                     </LinearLayout>
@@ -673,7 +673,7 @@
                     <Spinner
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/spinnerIntentOutput"
+                        android:id="@+id/spinnerIntentOutputMechanism"
                         android:entries="@array/intent_output_mechanism"
                         android:paddingRight="10dp" />
 
@@ -715,6 +715,7 @@
                         android:text="Delete Profile"
                         android:id="@+id/btnAdminDeleteProfile"
                         android:background="@color/zebraBlue"
+                        android:textColor="@color/zebraWhite"
                         android:paddingRight="10dp" />
 
                 </TableRow>

@@ -9,23 +9,24 @@ import java.util.Map;
  */
 public class Profile implements Serializable {
 
-    final String DECODER_UPCA = "UPCA";
-    final String DECODER_UPCE = "UPCE";
-    final String DECODER_EAN8= "EAN 8";
-    final String DECODER_EAN13 = "EAN 13";
-    final String DECODER_RSS14 = "RSS 14";
-    final String DECODER_CODE_39 = "CODE 39";
-    final String DECODER_CODE_93 = "CODE 93";
-    final String DECODER_CODE_128 = "CODE 128";
-    final String DECODER_ITF = "ITF";
-    final String DECODER_RSS_Expanded = "RSS Expanded";
-    final String DECODER_QR_CODE = "QR Code";
-    final String DECODER_DATA_MATRIX = "Data Matrix";
+    final static String DECODER_UPCA = "UPCA";
+    final static String DECODER_UPCE = "UPCE";
+    final static String DECODER_EAN8= "EAN 8";
+    final static String DECODER_EAN13 = "EAN 13";
+    final static String DECODER_RSS14 = "RSS 14";
+    final static String DECODER_CODE_39 = "CODE 39";
+    final static String DECODER_CODE_93 = "CODE 93";
+    final static String DECODER_CODE_128 = "CODE 128";
+    final static String DECODER_ITF = "ITF";
+    final static String DECODER_RSS_Expanded = "RSS Expanded";
+    final static String DECODER_QR_CODE = "QR Code";
+    final static String DECODER_DATA_MATRIX = "Data Matrix";
 
-    public Profile(String name)
+    public Profile(String name, boolean enabledByDefault)
     {
         this.name = name;
-        this.profileEnabled = true;
+        this.profileEnabled = enabledByDefault;
+        this.defaultProfile = enabledByDefault;
         this.barcodeInputEnabled = true;
         this.decodersEnabled = new HashMap<String, Boolean>();
         this.decodersEnabled.put(DECODER_UPCA, true);
@@ -54,6 +55,7 @@ public class Profile implements Serializable {
 
     private String name;
     private boolean profileEnabled;
+    private boolean defaultProfile; //  Not used
     private boolean barcodeInputEnabled;
     private Map<String, Boolean> decodersEnabled;
     private boolean intentOutputEnabled;
@@ -69,12 +71,20 @@ public class Profile implements Serializable {
         this.name = name;
     }
 
-    public boolean isProfileEnabled() {
+    public boolean getProfileEnabled() {
         return profileEnabled;
     }
 
     public void setProfileEnabled(boolean profileEnabled) {
         this.profileEnabled = profileEnabled;
+    }
+
+    public boolean getDefaultProfile() {
+        return defaultProfile;
+    }
+
+    public void setDefaultProfile(boolean defaultProfile) {
+        this.defaultProfile = defaultProfile;
     }
 
     public boolean isBarcodeInputEnabled() {
@@ -121,8 +131,12 @@ public class Profile implements Serializable {
         return decodersEnabled;
     }
 
-    public void setDecodersEnabled(Map<String, Boolean> decodersEnabled) {
-        this.decodersEnabled = decodersEnabled;
+    public void setDecodersEnabled(String decoder, boolean isEnabled) {
+        this.decodersEnabled.put(decoder, isEnabled);
+    }
+    public Boolean isDecoderEnabled(String decoder)
+    {
+        return this.decodersEnabled.get(decoder);
     }
 
 }
