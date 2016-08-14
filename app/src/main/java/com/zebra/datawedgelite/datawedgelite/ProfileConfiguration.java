@@ -72,6 +72,37 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
         profileEnabledCheck.setChecked(this.profiles.get(position).getProfileEnabled());
         profileEnabledCheck.setOnCheckedChangeListener(this);
 
+        final Spinner spinnerScanningEngine = (Spinner) findViewById(R.id.spinnerScaningEngine);
+        switch (profiles.get(position).getScanningEngine())
+        {
+            case SCANNING_ENGINE_ZXING:
+                spinnerScanningEngine.setSelection(0);
+                break;
+            case SCANNING_ENGINE_GOOGLE_VISION:
+                spinnerScanningEngine.setSelection(1);
+                break;
+        }
+        spinnerScanningEngine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+
+                String selectedMechanism = spinnerScanningEngine.getSelectedItem().toString();
+                if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.scanning_engine_zebra_crossing)))
+                {
+                    profiles.get(position).setScanningEngine(Profile.ScanningEngine.SCANNING_ENGINE_ZXING);
+                }
+                else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.scanning_engine_google_vision)))
+                {
+                    profiles.get(position).setScanningEngine(Profile.ScanningEngine.SCANNING_ENGINE_GOOGLE_VISION);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
         CheckBox profileBarcodeEnabledCheck = (CheckBox) findViewById(R.id.checkConfigureProfileBarcodeEnabled);
         profileBarcodeEnabledCheck.setChecked(this.profiles.get(position).isBarcodeInputEnabled());
         profileBarcodeEnabledCheck.setOnCheckedChangeListener(this);

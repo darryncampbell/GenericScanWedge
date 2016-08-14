@@ -1,8 +1,10 @@
 package com.zebra.datawedgelite.datawedgelite;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -14,6 +16,7 @@ import java.util.Collection;
 public class ZxingActivity extends AppCompatActivity {
 
     private Profile activeProfile;
+    static final String LOG_CATEGORY = "DWAPI Lite";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +28,6 @@ public class ZxingActivity extends AppCompatActivity {
 
         //  Launching Zebra Crossing
         IntentIntegrator integrator = new IntentIntegrator(this);
-        //  todo TEST THIS would also expect decoder information to come from the DW profiles
         //integrator.setDesiredBarcodeFormats(IntentIntegrator.PRODUCT_CODE_TYPES);
         ArrayList<String> desiredDecoders = new ArrayList<String>();
         if (activeProfile.isDecoderEnabled(Profile.DECODER_UPCA))
@@ -64,6 +66,7 @@ public class ZxingActivity extends AppCompatActivity {
 
     }
 
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
@@ -79,9 +82,9 @@ public class ZxingActivity extends AppCompatActivity {
                 Intent barcodeIntent = new Intent();
                 barcodeIntent.setAction(this.activeProfile.getIntentAction());
                 barcodeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //  todo return a source like 'scanner-ZXing?' or keep consistent with Datawedge?
+                //  todo make note: returns a source like 'scanner-ZXing
                 barcodeIntent.putExtra("com.symbol.datawedge.source", "scanner-zxing");
-                //  todo Convert formatname to Symbol names???
+                //  todo make note that we return the ZXing names, not symbol names
                 barcodeIntent.putExtra("com.symbol.datawedge.label_type", scanResult.getFormatName());
                 barcodeIntent.putExtra("com.symbol.datawedge.data_string", scanResult.getContents());
                 barcodeIntent.putExtra("com.symbol.datawedge.decode_data", scanResult.getContents().getBytes());
@@ -89,9 +92,16 @@ public class ZxingActivity extends AppCompatActivity {
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.label_type", scanResult.getFormatName());
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.data_string", scanResult.getContents());
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.decode_data", scanResult.getContents().getBytes());
-                barcodeIntent.addCategory(this.activeProfile.getIntentCategory());
+                if (!this.activeProfile.getIntentCategory().equalsIgnoreCase(""))
+                    barcodeIntent.addCategory(this.activeProfile.getIntentCategory());
                 //  todo startActivity / startService etc depends on the delivery mechanism of the active profile
-                startActivity(barcodeIntent);
+                try {
+                    startActivity(barcodeIntent);
+                }
+                catch (ActivityNotFoundException e)
+                {
+                    Log.w(LOG_CATEGORY, "No Activity found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                }
 
             }
         }

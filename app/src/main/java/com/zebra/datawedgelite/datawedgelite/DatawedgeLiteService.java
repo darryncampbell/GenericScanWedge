@@ -82,10 +82,17 @@ public class DatawedgeLiteService extends IntentService {
                 Log.d(LOG_CATEGORY, "Barcode scanning is disabled in the current profile");
                 return;
             }
-            //  todo - Offer alternatives to ZXing
-            Intent zxingActivity = new Intent(this, ZxingActivity.class);
-            zxingActivity.putExtra("activeProfile", activeProfile);
-            startActivity(zxingActivity);
+
+            if (activeProfile.getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_ZXING) {
+                Intent zxingActivity = new Intent(this, ZxingActivity.class);
+                zxingActivity.putExtra("activeProfile", activeProfile);
+                startActivity(zxingActivity);
+            }
+            else if (activeProfile.getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_GOOGLE_VISION) {
+                Intent googleVisionActivity = new Intent(this, GoogleVisionBarcodeActivity.class);
+                googleVisionActivity.putExtra("activeProfile", activeProfile);
+                startActivity(googleVisionActivity);
+            }
         }
         else if (param.equals("STOP_SCANNING"))
         {
@@ -132,6 +139,7 @@ public class DatawedgeLiteService extends IntentService {
         sendBroadcast(enumerateBarcodesIntent);
 
         //  todo test this (http://techdocs.zebra.com/datawedge/5-0/guide/api/)
+        //  todo - add OS license to the online repo
     }
 
     private void handleSetDefaultProfile(String profileName, ArrayList<Profile> profiles, int activeProfileIndex)

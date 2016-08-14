@@ -26,6 +26,7 @@ public class Profile implements Serializable {
     {
         this.name = name;
         this.profileEnabled = enabledByDefault;
+        this.scanningEngine = ScanningEngine.SCANNING_ENGINE_ZXING;
         this.defaultProfile = enabledByDefault;
         this.barcodeInputEnabled = true;
         this.decodersEnabled = new HashMap<String, Boolean>();
@@ -53,8 +54,14 @@ public class Profile implements Serializable {
         INTENT_DELIVERY_BROADCAST_INTENT
     }
 
+    public enum ScanningEngine {
+        SCANNING_ENGINE_ZXING,
+        SCANNING_ENGINE_GOOGLE_VISION
+    }
+
     private String name;
     private boolean profileEnabled;
+    private ScanningEngine scanningEngine;
     private boolean defaultProfile; //  Not used
     private boolean barcodeInputEnabled;
     private Map<String, Boolean> decodersEnabled;
@@ -125,6 +132,14 @@ public class Profile implements Serializable {
 
     public void setIntentDelivery(IntentDelivery intentDelivery) {
         this.intentDelivery = intentDelivery;
+    }
+
+    public ScanningEngine getScanningEngine() {
+        return scanningEngine;
+    }
+
+    public void setScanningEngine(ScanningEngine scanningEngine) {
+        this.scanningEngine = scanningEngine;
     }
 
     public Map<String, Boolean> getDecodersEnabled() {
