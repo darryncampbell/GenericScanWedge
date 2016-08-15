@@ -42,6 +42,10 @@
         </receiver>
 
         <activity android:name=".ZxingActivity" />
+        <activity android:name=".GoogleVisionBarcodeActivity" />
+        <activity android:name="com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity"
+            android:label="Read Barcode"/>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

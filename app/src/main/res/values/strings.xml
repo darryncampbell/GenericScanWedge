@@ -6,6 +6,8 @@
     <string name="intent_mechanism_start_activity">Send via startActivity</string>
     <string name="intent_mechanism_start_service">Send via startService</string>
     <string name="intent_mechanism_broadcast_intent">Broadcast intent</string>
+    <string name="scanning_engine_zebra_crossing">ZXing</string>
+    <string name="scanning_engine_google_vision">Google Vision</string>
     <string name="profile_file_name">testFile</string>
     <string name="enumerate_scanners_action">com.symbol.datawedge.api.ACTION_ENUMERATEDSCANNERLIST</string>
     <string name="enumerate_scanners_key">DataWedgeAPI_KEY_ENUMERATEDSCANNERLIST</string>
@@ -15,4 +17,23 @@
         <item>@string/intent_mechanism_start_service</item>
         <item>@string/intent_mechanism_broadcast_intent</item>
     </string-array>
+
+    <string-array name="scanning_engines">
+        <item>@string/scanning_engine_zebra_crossing</item>
+        <item>@string/scanning_engine_google_vision</item>
+    </string-array>
+
+    <!--  Imported from Google Vision Barcode Samples project -->
+    <string name="ok">OK</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
+    <string name="barcode_header">Click &quot;Read Barcode&quot; to read a barcode</string>
+    <string name="read_barcode">Read Barcode</string>
+    <string name="auto_focus">Auto Focus</string>
+    <string name="use_flash">Use Flash</string>
+    <string name="barcode_success">Barcode read successfully</string>
+    <string name="barcode_failure">No barcode captured</string>
+    <string name="barcode_error">"Error reading barcode: %1$s"</string>
+    <!-- End imported from Google Vision Barcode Samples project -->
 </resources>
