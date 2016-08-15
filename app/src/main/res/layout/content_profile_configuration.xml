@@ -707,6 +707,46 @@
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp">
 
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:text="Foreground flag"
+                            android:id="@+id/txtConfigureReceiveForegroundFlag"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Set receiver foreground flag"
+                            android:id="@+id/txtConfigureReceiveForegroundFlagHelp"
+                            />
+                    </LinearLayout>
+
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/checkConfigureReceiveForegroundFlag"
+                        android:layout_gravity="center_vertical|right"
+                        android:checked="true" />
+
+                </TableRow>
+
+
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -46,6 +46,7 @@ public class Profile implements Serializable {
         this.intentAction = "";
         this.intentCategory = "";
         this.intentDelivery = IntentDelivery.INTENT_DELIVERY_START_ACTIVITY;
+        this.receiverForegroundFlag = false;
     }
 
     public enum IntentDelivery {
@@ -69,6 +70,7 @@ public class Profile implements Serializable {
     private String intentAction;
     private String intentCategory;
     private IntentDelivery intentDelivery;
+    private boolean receiverForegroundFlag;
 
     public String getName() {
         return name;
@@ -154,4 +156,6 @@ public class Profile implements Serializable {
         return this.decodersEnabled.get(decoder);
     }
 
+    public Boolean getReceiverForegroundFlag() {return this.receiverForegroundFlag;}
+    public void setReceiverForegroundFlag(Boolean flag) {this.receiverForegroundFlag = flag;}
 }

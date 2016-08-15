@@ -1,18 +1,15 @@
 package com.zebra.datawedgelite.datawedgelite;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-import static com.zebra.datawedgelite.datawedgelite.R.string.enumerate_scanners_key;
-
 public class DatawedgeLiteService extends IntentService {
 
-    static final String LOG_CATEGORY = "DWAPI Lite";
+    static final String LOG_TAG = "DWAPI Lite";
 
     //  Supported Intents that this service processes (these come from applications requesting to open the scanner)
     private static final String ACTION_SOFTSCANTRIGGER = "com.symbol.datawedge.api.ACTION_SOFTSCANTRIGGER";
@@ -33,7 +30,7 @@ public class DatawedgeLiteService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         //Context ctx = getApplicationContext();
-        Log.v(LOG_CATEGORY, "onHandleIntent");
+        Log.v(LOG_TAG, "onHandleIntent");
         if (intent != null) {
             final String action = intent.getAction();
             final ArrayList<Profile> profiles = (ArrayList<Profile>) intent.getSerializableExtra("profiles");
@@ -70,7 +67,6 @@ public class DatawedgeLiteService extends IntentService {
                 handleSwitchToProfile(param, profiles, activeProfilePosition);
             }
         }
-
     }
 
     private void handleActionSoftScanTrigger(String param, Profile activeProfile)
@@ -79,7 +75,7 @@ public class DatawedgeLiteService extends IntentService {
         {
             if (!activeProfile.isBarcodeInputEnabled())
             {
-                Log.d(LOG_CATEGORY, "Barcode scanning is disabled in the current profile");
+                Log.d(LOG_TAG, "Barcode scanning is disabled in the current profile");
                 return;
             }
 
@@ -97,17 +93,17 @@ public class DatawedgeLiteService extends IntentService {
         else if (param.equals("STOP_SCANNING"))
         {
             //  Stop scanning does not make sense for ZXing or Google Vision API
-            Log.w(LOG_CATEGORY, "STOP_SCANNING is not implemented for Non Zebra devices");
+            Log.w(LOG_TAG, "STOP_SCANNING is not implemented for Non Zebra devices");
         }
         else if (param.equals("TOGGLE_SCANNING"))
         {
             //  Toggle scanning does not make sense for ZXing or Google Vision API
-            Log.w(LOG_CATEGORY, "TOGGLE_SCANNING is not implemented for Non Zebra devices");
+            Log.w(LOG_TAG, "TOGGLE_SCANNING is not implemented for Non Zebra devices");
         }
         else
         {
             //  Unrecognised parameter
-            Log.w(LOG_CATEGORY, "Unrecognised parameter to SoftScanTrigger: " + param);
+            Log.w(LOG_TAG, "Unrecognised parameter to SoftScanTrigger: " + param);
         }
     }
 
@@ -123,7 +119,7 @@ public class DatawedgeLiteService extends IntentService {
         else
         {
             //  Unrecognised paramter
-            Log.w(LOG_CATEGORY, "Unrecognised parameter to ScannerInputPlugin: " + param);
+            Log.w(LOG_TAG, "Unrecognised parameter to ScannerInputPlugin: " + param);
         }
         MainActivity.saveProfiles(profiles, getApplicationContext());
     }
@@ -132,14 +128,11 @@ public class DatawedgeLiteService extends IntentService {
         Intent enumerateBarcodesIntent = new Intent();
         enumerateBarcodesIntent.setAction(getResources().getString(R.string.enumerate_scanners_action));
         String[] scanner_list = new String[1];
-        scanner_list[0] = "CAMERA";
+        scanner_list[0] = "Camera Scanner";
         Bundle bundle = new Bundle();
         bundle.putStringArray(getResources().getString(R.string.enumerate_scanners_key), scanner_list);
         enumerateBarcodesIntent.putExtras(bundle);
         sendBroadcast(enumerateBarcodesIntent);
-
-        //  todo test this (http://techdocs.zebra.com/datawedge/5-0/guide/api/)
-        //  todo - add OS license to the online repo
     }
 
     private void handleSetDefaultProfile(String profileName, ArrayList<Profile> profiles, int activeProfileIndex)
@@ -147,9 +140,8 @@ public class DatawedgeLiteService extends IntentService {
         //  I have not implemented default profiles because we do not switch profiles dynamically
         //  depending on which application is shown so we don't have a notion of a 'default profile',
         //  it's just whichever profile is enabled.
-        Log.w(LOG_CATEGORY, "Default Profile is not implemented in the Datawedge Lite Service.  Switching to specified profile");
+        Log.w(LOG_TAG, "Default Profile is not implemented in the Datawedge Lite Service.  Switching to specified profile");
         handleSwitchToProfile(profileName, profiles, activeProfileIndex);
-        //  todo test this
     }
 
     private void handleResetDefaultProfile(String profileName)
@@ -157,14 +149,14 @@ public class DatawedgeLiteService extends IntentService {
         //  I have not implemented default profiles because we do not switch profiles dynamically
         //  depending on which application is shown so we don't have a notion of a 'default profile',
         //  it's just whichever profile is enabled.
-        Log.w(LOG_CATEGORY, "Default Profile is not implemented in the Datawedge Lite Service.");
+        Log.w(LOG_TAG, "Default Profile is not implemented in the Datawedge Lite Service.");
 
         //  Another thing, why does this this method take a profileName paramter?  I think the online docs are wrong.
     }
 
     private void handleSwitchToProfile(String param, ArrayList<Profile> profiles, int activeProfileIndex)
     {
-        Log.d(LOG_CATEGORY, "Switching to profile: " + param);
+        Log.d(LOG_TAG, "Switching to profile: " + param);
         //  Change the enabled profile to the specified profile name
         boolean bFoundProfile = false;
         for (int i = 0; i < profiles.size(); i++)
@@ -173,15 +165,15 @@ public class DatawedgeLiteService extends IntentService {
             {
                 profiles.get(activeProfileIndex).setProfileEnabled(false);
                 profiles.get(i).setProfileEnabled(true);
+                bFoundProfile = true;
             }
         }
         if (bFoundProfile)
             MainActivity.saveProfiles(profiles, getApplicationContext());
         else
         {
-            Log.w(LOG_CATEGORY, "Unrecognised profile to switch to: " + param);
+            Log.w(LOG_TAG, "Unrecognised profile to switch to: " + param);
         }
-        //  todo - test this
     }
 
 }

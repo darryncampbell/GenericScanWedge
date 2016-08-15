@@ -1,7 +1,11 @@
 package com.zebra.datawedgelite.datawedgelite;
 
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +15,12 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public class ZxingActivity extends AppCompatActivity {
 
     private Profile activeProfile;
-    static final String LOG_CATEGORY = "DWAPI Lite";
+    static final String LOG_TAG = "DWAPI Lite";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,18 +77,11 @@ public class ZxingActivity extends AppCompatActivity {
             // handle scan result
             if(scanResult.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-                //  Bit of a hack but want to return to the original calling application
-                Intent finishIntent = new Intent(this, MainActivity.class);
-                finishIntent.putExtra("finish", true);
-                finishIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(finishIntent);
+                sendMainActivityFinishIntent();
             } else {
-                Intent barcodeIntent = new Intent();
-                barcodeIntent.setAction(this.activeProfile.getIntentAction());
-                barcodeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //  todo make note: returns a source like 'scanner-ZXing
-                barcodeIntent.putExtra("com.symbol.datawedge.source", "scanner-zxing");
-                //  todo make note that we return the ZXing names, not symbol names
+                Intent barcodeIntent = new Intent(this.activeProfile.getIntentAction());
+//                barcodeIntent.setAction(this.activeProfile.getIntentAction());
+                barcodeIntent.putExtra("com.symbol.datawedge.source", "camera-zxing");
                 barcodeIntent.putExtra("com.symbol.datawedge.label_type", scanResult.getFormatName());
                 barcodeIntent.putExtra("com.symbol.datawedge.data_string", scanResult.getContents());
                 barcodeIntent.putExtra("com.symbol.datawedge.decode_data", scanResult.getContents().getBytes());
@@ -94,17 +91,72 @@ public class ZxingActivity extends AppCompatActivity {
                 barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.decode_data", scanResult.getContents().getBytes());
                 if (!this.activeProfile.getIntentCategory().equalsIgnoreCase(""))
                     barcodeIntent.addCategory(this.activeProfile.getIntentCategory());
-                //  todo startActivity / startService etc depends on the delivery mechanism of the active profile
-                try {
-                    startActivity(barcodeIntent);
+                if (this.activeProfile.getIntentDelivery() == Profile.IntentDelivery.INTENT_DELIVERY_START_ACTIVITY) {
+                    try {
+                        barcodeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(barcodeIntent);
+                        //  This also prevents ZXing from still showing if we tab back to the profile app
+                        sendMainActivityFinishIntent();
+
+                    } catch (ActivityNotFoundException e) {
+                        Log.w(LOG_TAG, "No Activity found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                    }
                 }
-                catch (ActivityNotFoundException e)
+                else if (this.activeProfile.getIntentDelivery() == Profile.IntentDelivery.INTENT_DELIVERY_START_SERVICE)
                 {
-                    Log.w(LOG_CATEGORY, "No Activity found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                    try {
+                        startService(createExplicitFromImplicitIntent(getApplicationContext(), barcodeIntent));
+                        sendMainActivityFinishIntent();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.w(LOG_TAG, "No Service found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                    }
+                }
+                else if (this.activeProfile.getIntentDelivery() == Profile.IntentDelivery.INTENT_DELIVERY_BROADCAST_INTENT)
+                {
+                    if (this.activeProfile.getReceiverForegroundFlag())
+                        barcodeIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+                    sendBroadcast(barcodeIntent);
+                    sendMainActivityFinishIntent();
                 }
 
             }
         }
         finish();
+    }
+
+    private void sendMainActivityFinishIntent()
+    {
+        //  Bit of a hack but want to return to the original calling application
+        Intent finishIntent = new Intent(this, MainActivity.class);
+        finishIntent.putExtra("finish", true);
+        finishIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(finishIntent);
+    }
+
+    private Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+        // Retrieve all services that can match the given intent
+        PackageManager pm = context.getPackageManager();
+        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+
+        // Make sure only one match was found
+        if (resolveInfo == null || resolveInfo.size() != 1) {
+            return null;
+        }
+
+        // Get component info and create ComponentName
+        ResolveInfo serviceInfo = resolveInfo.get(0);
+        String packageName = serviceInfo.serviceInfo.packageName;
+        String className = serviceInfo.serviceInfo.name;
+        ComponentName component = new ComponentName(packageName, className);
+
+        // Create a new intent. Use the old one for extras and such reuse
+        Intent explicitIntent = new Intent(implicitIntent);
+
+        // Set the component to be explicit
+        explicitIntent.setComponent(component);
+
+        return explicitIntent;
     }
 }

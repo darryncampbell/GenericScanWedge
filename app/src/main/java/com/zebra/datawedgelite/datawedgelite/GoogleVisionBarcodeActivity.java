@@ -1,7 +1,11 @@
 package com.zebra.datawedgelite.datawedgelite;
 
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,13 +15,13 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class GoogleVisionBarcodeActivity extends AppCompatActivity {
 
     private Profile activeProfile;
     private static final int RC_BARCODE_CAPTURE = 9001;
-    static final String LOG_CATEGORY = "DWAPI Lite";
+    static final String LOG_TAG = "DWAPI Lite";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +49,13 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     //statusMessage.setText(R.string.barcode_success);
                     //barcodeValue.setText(barcode.displayValue);
-                    Log.d(LOG_CATEGORY, "Barcode read from Google Vision Barcode API: " + barcode.displayValue);
+                    Log.d(LOG_TAG, "Barcode read from Google Vision Barcode API: " + barcode.displayValue);
 
                     //  https://developers.google.com/android/reference/com/google/android/gms/vision/barcode/Barcode
 
-                    Intent barcodeIntent = new Intent();
-                    barcodeIntent.setAction(this.activeProfile.getIntentAction());
-                    barcodeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    barcodeIntent.putExtra("com.symbol.datawedge.source", "scanner-google-vision");
+                    Intent barcodeIntent = new Intent(this.activeProfile.getIntentAction());
+                    //barcodeIntent.setAction(this.activeProfile.getIntentAction());
+                    barcodeIntent.putExtra("com.symbol.datawedge.source", "camera-google-vision");
                     barcodeIntent.putExtra("com.symbol.datawedge.label_type", decoderFormatToString(barcode.format));
                     barcodeIntent.putExtra("com.symbol.datawedge.data_string", barcode.displayValue);
                     barcodeIntent.putExtra("com.symbol.datawedge.decode_data", barcode.rawValue.getBytes());
@@ -62,27 +65,43 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
                     barcodeIntent.putExtra("com.motorolasolutions.emdk.datawedge.decode_data", barcode.rawValue.getBytes());
                     if (!this.activeProfile.getIntentCategory().equalsIgnoreCase(""))
                         barcodeIntent.addCategory(this.activeProfile.getIntentCategory());
-                    //  todo startActivity / startService etc depends on the delivery mechanism of the active profile
-                    try {
-                        startActivity(barcodeIntent);
+                    if (this.activeProfile.getIntentDelivery() == Profile.IntentDelivery.INTENT_DELIVERY_START_ACTIVITY) {
+                        try {
+                            barcodeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(barcodeIntent);
+                            sendMainActivityFinishIntent();
+                        } catch (ActivityNotFoundException e) {
+                            Log.w(LOG_TAG, "No Activity found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                        }
                     }
-                    catch (ActivityNotFoundException e)
+                    else if (this.activeProfile.getIntentDelivery() == Profile.IntentDelivery.INTENT_DELIVERY_START_SERVICE)
                     {
-                        Log.w(LOG_CATEGORY, "No Activity found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                        try {
+                            startService(createExplicitFromImplicitIntent(getApplicationContext(), barcodeIntent));
+                            sendMainActivityFinishIntent();
+                        }
+                        catch (Exception e)
+                        {
+                            Log.w(LOG_TAG, "No Service found to handle barcode.  Current profile action is " + this.activeProfile.getIntentAction());
+                        }
+                    }
+                    else if (this.activeProfile.getIntentDelivery() == Profile.IntentDelivery.INTENT_DELIVERY_BROADCAST_INTENT)
+                    {
+                        if (this.activeProfile.getReceiverForegroundFlag())
+                            barcodeIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+                        sendBroadcast(barcodeIntent);
+                        sendMainActivityFinishIntent();
                     }
 
+
                 } else {
-                    Log.d(LOG_CATEGORY, "No barcode captured from Google Vision Barcode, intent data is null");
+                    Log.d(LOG_TAG, "No barcode captured from Google Vision Barcode, intent data is null");
                     //  The user has cancelled the capture
                     Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-                    //  Bit of a hack but want to return to the original calling application
-                    Intent finishIntent = new Intent(this, MainActivity.class);
-                    finishIntent.putExtra("finish", true);
-                    finishIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(finishIntent);
+                    sendMainActivityFinishIntent();
                 }
             } else {
-                Log.d(LOG_CATEGORY, String.format(getString(R.string.barcode_error),
+                Log.d(LOG_TAG, String.format(getString(R.string.barcode_error),
                         CommonStatusCodes.getStatusCodeString(resultCode)));
             }
         }
@@ -91,6 +110,41 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
         }
         finish();
     }
+
+    private void sendMainActivityFinishIntent()
+    {
+        //  Bit of a hack but want to return to the original calling application
+        Intent finishIntent = new Intent(this, MainActivity.class);
+        finishIntent.putExtra("finish", true);
+        finishIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(finishIntent);
+    }
+
+    private Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+        // Retrieve all services that can match the given intent
+        PackageManager pm = context.getPackageManager();
+        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+
+        // Make sure only one match was found
+        if (resolveInfo == null || resolveInfo.size() != 1) {
+            return null;
+        }
+
+        // Get component info and create ComponentName
+        ResolveInfo serviceInfo = resolveInfo.get(0);
+        String packageName = serviceInfo.serviceInfo.packageName;
+        String className = serviceInfo.serviceInfo.name;
+        ComponentName component = new ComponentName(packageName, className);
+
+        // Create a new intent. Use the old one for extras and such reuse
+        Intent explicitIntent = new Intent(implicitIntent);
+
+        // Set the component to be explicit
+        explicitIntent.setComponent(component);
+
+        return explicitIntent;
+    }
+
 
     private String decoderFormatToString(int decoderFormat)
     {

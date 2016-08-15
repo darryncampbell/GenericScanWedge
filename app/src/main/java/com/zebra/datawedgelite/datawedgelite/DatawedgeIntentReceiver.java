@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,11 +16,11 @@ import java.util.ArrayList;
  */
 public class DatawedgeIntentReceiver extends BroadcastReceiver {
 
-    static final String LOG_CATEGORY = "DWAPI Lite";
+    static final String LOG_TAG = "DWAPI Lite";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        //Log.d(LOG_CATEGORY, "Received Broadcast Intent: " + intent.getAction());
+        //Log.d(LOG_TAG, "Received Broadcast Intent: " + intent.getAction());
         //  Just forward any intent we receive to the intent service unless we're running
         //  on a Zebra device
         if (!android.os.Build.MANUFACTURER.equalsIgnoreCase("Zebra Technologies") &&
@@ -29,10 +28,7 @@ public class DatawedgeIntentReceiver extends BroadcastReceiver {
         {
 
             try {
-                FileInputStream fis = context.openFileInput(context.getResources().getString(R.string.profile_file_name));
-                ObjectInputStream is = null;
-                is = new ObjectInputStream(fis);
-                ArrayList<Profile> profiles = (ArrayList<Profile>) is.readObject();
+                ArrayList<Profile> profiles = MainActivity.readProfiles(context);
                 if (profiles != null)
                 {
                     Profile activeProfile = null;
@@ -44,28 +40,27 @@ public class DatawedgeIntentReceiver extends BroadcastReceiver {
                             break;
                         }
                     if (activeProfile == null)
-                        Log.e(LOG_CATEGORY, "No Active profile currently defined and enabled.  No barcode will be scanned");
+                        Log.e(LOG_TAG, "No Active profile currently defined and enabled.  No barcode will be scanned");
                     else
                     {
                         //  We have successfully read in the configured profiles, find the active one
-                        Log.d(LOG_CATEGORY, "Active Profile: " + activeProfile.getName());
+                        Log.d(LOG_TAG, "Active Profile: " + activeProfile.getName());
                         Intent newIntent = new Intent(context, DatawedgeLiteService.class);
                         newIntent.setAction(intent.getAction());
-                        newIntent.putExtras(intent.getExtras());
+                        if (intent.getExtras() != null)
+                            newIntent.putExtras(intent.getExtras());
                         newIntent.putExtra("activeProfilePosition", activeProfilePosition);
                         newIntent.putExtra("profiles", profiles);
                         //newIntent.putExtra
                         context.startService(newIntent);
                     }
                 }
-                is.close();
-                fis.close();
             } catch (IOException e) {
                 //e.printStackTrace();
-                Log.e(LOG_CATEGORY, "Unable to read DataWedge profile, please configure an active profile");
+                Log.e(LOG_TAG, "Unable to read DataWedge profile, please configure an active profile");
             }catch (ClassNotFoundException e) {
                 //e.printStackTrace();
-                Log.e(LOG_CATEGORY, "Unable to read DataWedge profile, please configure an active profile");
+                Log.e(LOG_TAG, "Unable to read DataWedge profile, please configure an active profile");
             }
 
         }

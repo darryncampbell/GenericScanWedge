@@ -10,7 +10,7 @@
     <string name="scanning_engine_google_vision">Google Vision</string>
     <string name="profile_file_name">testFile</string>
     <string name="enumerate_scanners_action">com.symbol.datawedge.api.ACTION_ENUMERATEDSCANNERLIST</string>
-    <string name="enumerate_scanners_key">DataWedgeAPI_KEY_ENUMERATEDSCANNERLIST</string>
+    <string name="enumerate_scanners_key">DWAPI_KEY_ENUMERATEDSCANNERLIST</string>
 
     <string-array name="intent_output_mechanism">
         <item>@string/intent_mechanism_start_activity</item>

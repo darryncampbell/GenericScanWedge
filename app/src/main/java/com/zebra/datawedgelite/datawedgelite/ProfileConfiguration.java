@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -184,12 +185,15 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
         {
             case INTENT_DELIVERY_START_ACTIVITY:
                 spinnerIntentOutputMechanism.setSelection(0);
+                disableReceiverForegroundFlagUI();
                 break;
             case INTENT_DELIVERY_START_SERVICE:
                 spinnerIntentOutputMechanism.setSelection(1);
+                disableReceiverForegroundFlagUI();
                 break;
             case INTENT_DELIVERY_BROADCAST_INTENT:
                 spinnerIntentOutputMechanism.setSelection(2);
+                enableReceiverForegroundFlagUI();
                 break;
         }
         spinnerIntentOutputMechanism.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -202,14 +206,17 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                 if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.intent_mechanism_start_activity)))
                 {
                     profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_START_ACTIVITY);
+                    disableReceiverForegroundFlagUI();
                 }
                 else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.intent_mechanism_start_service)))
                 {
                     profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_START_SERVICE);
+                    disableReceiverForegroundFlagUI();
                 }
                 else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.intent_mechanism_broadcast_intent)))
                 {
                     profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_BROADCAST_INTENT);
+                    enableReceiverForegroundFlagUI();
                 }
             }
 
@@ -217,9 +224,33 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        //  todo Also need a 'Receiver foreground flag' checkbox which is only enabled for Broadcast intents.
+        CheckBox configureReceiverForegroundFlag = (CheckBox) findViewById(R.id.checkConfigureReceiveForegroundFlag);
+        configureReceiverForegroundFlag.setChecked(this.profiles.get(position).getReceiverForegroundFlag());
+        configureReceiverForegroundFlag.setOnCheckedChangeListener(this);
 
     }
+
+    private void disableReceiverForegroundFlagUI()
+    {
+        TextView receiverForegroundFlag = (TextView) findViewById(R.id.txtConfigureReceiveForegroundFlag);
+        TextView receiverForegroundFlagHelp = (TextView) findViewById(R.id.txtConfigureReceiveForegroundFlagHelp);
+        CheckBox receiverForegroundFlagCheck = (CheckBox) findViewById(R.id.checkConfigureReceiveForegroundFlag);
+        receiverForegroundFlag.setEnabled(false);
+        receiverForegroundFlagHelp.setEnabled(false);
+        receiverForegroundFlagCheck.setEnabled(false);
+    }
+
+    private void enableReceiverForegroundFlagUI()
+    {
+        TextView receiverForegroundFlag = (TextView) findViewById(R.id.txtConfigureReceiveForegroundFlag);
+        TextView receiverForegroundFlagHelp = (TextView) findViewById(R.id.txtConfigureReceiveForegroundFlagHelp);
+        CheckBox receiverForegroundFlagCheck = (CheckBox) findViewById(R.id.checkConfigureReceiveForegroundFlag);
+        receiverForegroundFlag.setEnabled(true);
+        receiverForegroundFlagHelp.setEnabled(true);
+        receiverForegroundFlagCheck.setEnabled(true);
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -300,6 +331,9 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
             case R.id.checkConfigureProfileBarcodeDataMatrix:
                 this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_DATA_MATRIX, b);
                break;
+            case R.id.checkConfigureReceiveForegroundFlag:
+                this.profiles.get(this.position).setReceiverForegroundFlag(b);
+                break;
         }
     }
 }
