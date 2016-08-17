@@ -17,6 +17,12 @@ import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureA
 
 import java.util.List;
 
+//  This class enables the Google Barcode API to be called from the DataWedge lite service.  I have
+//  just copy / pasted the Google Vision example for Barcode which seems a bit buggy on my phone but
+//  gets the job done.  All the Google Barcode specific stuff is stored under /GoogleVisionBarcode
+//  and only differs from the Google sample by me changing the package name and adding the requested
+//  decoder formats.
+//  https://developers.google.com/android/reference/com/google/android/gms/vision/barcode/Barcode
 public class GoogleVisionBarcodeActivity extends AppCompatActivity {
 
     private Profile activeProfile;
@@ -31,30 +37,29 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_hiddenactivity);
 
-        //  Expect the action for the return intent to be passed in
         activeProfile = (Profile) getIntent().getSerializableExtra("activeProfile");
         Intent intent = new Intent(this, com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity.class);
         intent.putExtra(com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity.AutoFocus, true);
         intent.putExtra(com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity.UseFlash, true);
+        //  Added on top of the Google Barcode sample, supported decoders are flags.
         intent.putExtra("formats", giveSupportedDecoders());
         startActivityForResult(intent, RC_BARCODE_CAPTURE);
 
     }
 
+    //  A barcode has been read from the Google Barcode API, notify the calling application
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_BARCODE_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                    //statusMessage.setText(R.string.barcode_success);
-                    //barcodeValue.setText(barcode.displayValue);
                     Log.d(LOG_TAG, "Barcode read from Google Vision Barcode API: " + barcode.displayValue);
 
                     //  https://developers.google.com/android/reference/com/google/android/gms/vision/barcode/Barcode
 
                     Intent barcodeIntent = new Intent(this.activeProfile.getIntentAction());
-                    //barcodeIntent.setAction(this.activeProfile.getIntentAction());
+                    //  Same format as defined by Datawedge including backwards compatibility with the old MSI devices.
                     barcodeIntent.putExtra("com.symbol.datawedge.source", "camera-google-vision");
                     barcodeIntent.putExtra("com.symbol.datawedge.label_type", decoderFormatToString(barcode.format));
                     barcodeIntent.putExtra("com.symbol.datawedge.data_string", barcode.displayValue);
@@ -93,7 +98,6 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
                         sendMainActivityFinishIntent();
                     }
 
-
                 } else {
                     Log.d(LOG_TAG, "No barcode captured from Google Vision Barcode, intent data is null");
                     //  The user has cancelled the capture
@@ -113,13 +117,16 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
 
     private void sendMainActivityFinishIntent()
     {
-        //  Bit of a hack but want to return to the original calling application
+        //  Bit of a hack but want to return to the original calling application so call finish
+        //  on any DWLite service activity.
         Intent finishIntent = new Intent(this, MainActivity.class);
         finishIntent.putExtra("finish", true);
         finishIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(finishIntent);
     }
 
+    //  Work around for sending to a service.  Could probably be more intelligent here as just
+    //  copied from stack overflow
     private Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
         // Retrieve all services that can match the given intent
         PackageManager pm = context.getPackageManager();
@@ -145,7 +152,8 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
         return explicitIntent;
     }
 
-
+    //  The format of the decoded barcode is an int, convert this to a string so it's compatible
+    //  with the return format we need.
     private String decoderFormatToString(int decoderFormat)
     {
         switch(decoderFormat) {
@@ -182,6 +190,8 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
         }
     }
 
+    //  Create the flags we need to pass to the Google Barcode API depending on the decoders defined
+    // in the DW Lite profile
     private int giveSupportedDecoders()
     {
         int returnVal = 0;

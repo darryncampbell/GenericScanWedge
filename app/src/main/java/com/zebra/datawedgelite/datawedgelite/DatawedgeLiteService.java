@@ -7,10 +7,12 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+//  This service handles DataWedge API intents from the calling application
 public class DatawedgeLiteService extends IntentService {
 
     static final String LOG_TAG = "DWAPI Lite";
 
+    //  As defined by the DataWedge API:
     //  Supported Intents that this service processes (these come from applications requesting to open the scanner)
     private static final String ACTION_SOFTSCANTRIGGER = "com.symbol.datawedge.api.ACTION_SOFTSCANTRIGGER";
     private static final String ACTION_SCANNERINPUTPLUGIN = "com.symbol.datawedge.api.ACTION_SCANNERINPUTPLUGIN";
@@ -18,7 +20,6 @@ public class DatawedgeLiteService extends IntentService {
     private static final String ACTION_SETDEFAULTPROFILE = "com.symbol.datawedge.api.ACTION_SETDEFAULTPROFILE";
     private static final String ACTION_RESETDEFAULTPROFILE = "com.symbol.datawedge.api.ACTION_RESETDEFAULTPROFILE";
     private static final String ACTION_SWITCHTOPROFILE = "com.symbol.datawedge.api.ACTION_SWITCHTOPROFILE";
-
     //  Parameters associated with the application actions
     private static final String EXTRA_PARAMETER = "com.symbol.datawedge.api.EXTRA_PARAMETER";
     private static final String EXTRA_PROFILENAME = "com.symbol.datawedge.api.EXTRA_PROFILENAME";
@@ -69,6 +70,7 @@ public class DatawedgeLiteService extends IntentService {
         }
     }
 
+    //  Calling application is asking to initiate or stop a scan in progress
     private void handleActionSoftScanTrigger(String param, Profile activeProfile)
     {
         if (param.equals("START_SCANNING"))
@@ -79,6 +81,7 @@ public class DatawedgeLiteService extends IntentService {
                 return;
             }
 
+            //  If any more scan engines are supported they need adding here.
             if (activeProfile.getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_ZXING) {
                 Intent zxingActivity = new Intent(this, ZxingActivity.class);
                 zxingActivity.putExtra("activeProfile", activeProfile);
@@ -107,6 +110,7 @@ public class DatawedgeLiteService extends IntentService {
         }
     }
 
+    //  Calling application is asking to enable or disable scanning in the active profile
     private void handleScannerInputPlugin(String param, ArrayList<Profile> profiles, int activeProfilePosition) {
         if (param.equals("ENABLE_PLUGIN"))
         {
@@ -118,12 +122,13 @@ public class DatawedgeLiteService extends IntentService {
         }
         else
         {
-            //  Unrecognised paramter
+            //  Unrecognised parameter
             Log.w(LOG_TAG, "Unrecognised parameter to ScannerInputPlugin: " + param);
         }
         MainActivity.saveProfiles(profiles, getApplicationContext());
     }
 
+    //  Calling application is asking to enumerate the available scanners.  For ZXing or Google Barcode API we just return the camera
     private void handleEnumerateScanners() {
         Intent enumerateBarcodesIntent = new Intent();
         enumerateBarcodesIntent.setAction(getResources().getString(R.string.enumerate_scanners_action));
@@ -154,6 +159,7 @@ public class DatawedgeLiteService extends IntentService {
         //  Another thing, why does this this method take a profileName paramter?  I think the online docs are wrong.
     }
 
+    //  Calling application has requested to switch to a specific profile
     private void handleSwitchToProfile(String param, ArrayList<Profile> profiles, int activeProfileIndex)
     {
         Log.d(LOG_TAG, "Switching to profile: " + param);
@@ -175,5 +181,4 @@ public class DatawedgeLiteService extends IntentService {
             Log.w(LOG_TAG, "Unrecognised profile to switch to: " + param);
         }
     }
-
 }

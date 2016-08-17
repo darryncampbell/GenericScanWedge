@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (getIntent().getBooleanExtra("finish", false))
         {
+            //  Bit of a hack, enables the activity to be hidden after a scan
             finish();
         }
 
@@ -46,12 +47,6 @@ public class MainActivity extends AppCompatActivity {
                 saveProfiles(profiles, getApplicationContext());
             }
         });
-
-        //  Populate the profiles available
-//        profiles.add(new Profile("Profile0 (Default)"));
-//        profiles.add(new Profile("Barcode Disabled"));
-
-
     }
 
     @Override
@@ -73,20 +68,19 @@ public class MainActivity extends AppCompatActivity {
             ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
             profilesListAdapter = new ProfilesListAdapter(this, this.profiles);
             profilesListView.setAdapter(profilesListAdapter);
-
         } catch (IOException e) {
             profiles.add(new Profile("Profile0 (Default)", true));
             ListView profilesListView = (ListView)findViewById(R.id.profiles_list);
             profilesListAdapter = new ProfilesListAdapter(this, this.profiles);
             profilesListView.setAdapter(profilesListAdapter);
         }catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }finally
-        {
+            Log.e(LOG_TAG, "Something has gone wrong reading and parsing the existing profiles");
+            //e.printStackTrace();
         }
-
     }
 
+    //  Save the configured profiles to disk to persist.  This could be changed to the storage card
+    //  or some other location later if we want.
     public static void saveProfiles(ArrayList<Profile> profiles, Context context)
     {
         try {
@@ -96,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
             os.close();
             fos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Error saving profiles to disk");
+            //e.printStackTrace();
         }
     }
 
+    //  Read the configured profiles from disk, ensure it's the same location they were saved to ;)
     public static ArrayList<Profile> readProfiles(Context context) throws IOException, ClassNotFoundException {
         FileInputStream fis = context.openFileInput(context.getResources().getString(R.string.profile_file_name));
         ObjectInputStream is = null;

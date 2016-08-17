@@ -1,9 +1,6 @@
 package com.zebra.datawedgelite.datawedgelite;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -15,18 +12,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+//  Logic underlying the profile configuration screen, accepts input from the user on what attributes
+//  should be in the specified profile and persists it to disk.
 public class ProfileConfiguration extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
-    //  The list of all profiles (passed via Intent)
+    //  The list of all profiles (passed via Intent).  We need this to ensure all profiles are persisted (as we save them all in the same file)
     ArrayList<Profile> profiles;
     //  The position in the profiles array which corresponds with the profile we are to display
     int position;
@@ -48,6 +42,7 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
             getSupportActionBar().setTitle("Configure Profile: " + profile.getName());
         }
 
+        //  For each control, set the current value and add an event listener to process changes.
         final Button button = (Button) findViewById(R.id.btnAdminDeleteProfile);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -230,6 +225,7 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
 
     }
 
+    //  The receiver foreground flag checkbox and UI should only be shown if the user has selected sendBroadcast()
     private void disableReceiverForegroundFlagUI()
     {
         TextView receiverForegroundFlag = (TextView) findViewById(R.id.txtConfigureReceiveForegroundFlag);
@@ -251,8 +247,7 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
     }
 
 
-
-    @Override
+/*    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -262,7 +257,7 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                 return super.onOptionsItemSelected(item);
         }
     }
-
+*/
     @Override
     public void onPause()
     {
@@ -275,10 +270,10 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
     public void onStop()
     {
         super.onStop();
-        //  Back up the profiles
-        //MainActivity.saveProfiles(this.profiles, getApplicationContext());
+        //  The profiles are backed up onPause()
     }
 
+    //  Same logic for handling all decoder enabled? checkboxes
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         switch(compoundButton.getId()){

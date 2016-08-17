@@ -7,6 +7,8 @@ import java.util.Map;
 /**
  * Created by darry on 13/08/2016.
  */
+//  Defines a DataWedge profile i.e. the properties of the barcode scanner currently in effect.
+//  One profile will be 'active' (i.e. applied) at a time
 public class Profile implements Serializable {
 
     final static String DECODER_UPCA = "UPCA";
@@ -27,7 +29,6 @@ public class Profile implements Serializable {
         this.name = name;
         this.profileEnabled = enabledByDefault;
         this.scanningEngine = ScanningEngine.SCANNING_ENGINE_ZXING;
-        this.defaultProfile = enabledByDefault;
         this.barcodeInputEnabled = true;
         this.decodersEnabled = new HashMap<String, Boolean>();
         this.decodersEnabled.put(DECODER_UPCA, true);
@@ -63,7 +64,6 @@ public class Profile implements Serializable {
     private String name;
     private boolean profileEnabled;
     private ScanningEngine scanningEngine;
-    private boolean defaultProfile; //  Not used
     private boolean barcodeInputEnabled;
     private Map<String, Boolean> decodersEnabled;
     private boolean intentOutputEnabled;
@@ -75,7 +75,6 @@ public class Profile implements Serializable {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -83,23 +82,13 @@ public class Profile implements Serializable {
     public boolean getProfileEnabled() {
         return profileEnabled;
     }
-
     public void setProfileEnabled(boolean profileEnabled) {
         this.profileEnabled = profileEnabled;
-    }
-
-    public boolean getDefaultProfile() {
-        return defaultProfile;
-    }
-
-    public void setDefaultProfile(boolean defaultProfile) {
-        this.defaultProfile = defaultProfile;
     }
 
     public boolean isBarcodeInputEnabled() {
         return barcodeInputEnabled;
     }
-
     public void setBarcodeInputEnabled(boolean barcodeInputEnabled) {
         this.barcodeInputEnabled = barcodeInputEnabled;
     }
@@ -107,7 +96,6 @@ public class Profile implements Serializable {
     public boolean isIntentOutputEnabled() {
         return intentOutputEnabled;
     }
-
     public void setIntentOutputEnabled(boolean intentOutputEnabled) {
         this.intentOutputEnabled = intentOutputEnabled;
     }
@@ -115,7 +103,6 @@ public class Profile implements Serializable {
     public String getIntentAction() {
         return intentAction;
     }
-
     public void setIntentAction(String intentAction) {
         this.intentAction = intentAction;
     }
@@ -123,7 +110,6 @@ public class Profile implements Serializable {
     public String getIntentCategory() {
         return intentCategory;
     }
-
     public void setIntentCategory(String intentCategory) {
         this.intentCategory = intentCategory;
     }
@@ -131,7 +117,6 @@ public class Profile implements Serializable {
     public IntentDelivery getIntentDelivery() {
         return intentDelivery;
     }
-
     public void setIntentDelivery(IntentDelivery intentDelivery) {
         this.intentDelivery = intentDelivery;
     }
@@ -139,13 +124,8 @@ public class Profile implements Serializable {
     public ScanningEngine getScanningEngine() {
         return scanningEngine;
     }
-
     public void setScanningEngine(ScanningEngine scanningEngine) {
         this.scanningEngine = scanningEngine;
-    }
-
-    public Map<String, Boolean> getDecodersEnabled() {
-        return decodersEnabled;
     }
 
     public void setDecodersEnabled(String decoder, boolean isEnabled) {

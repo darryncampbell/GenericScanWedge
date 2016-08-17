@@ -18,16 +18,17 @@ public class DatawedgeIntentReceiver extends BroadcastReceiver {
 
     static final String LOG_TAG = "DWAPI Lite";
 
+    //  This function is called when the Datawedge Intent API is called e.g. StartSoftScan.
     @Override
     public void onReceive(Context context, Intent intent) {
-        //Log.d(LOG_TAG, "Received Broadcast Intent: " + intent.getAction());
         //  Just forward any intent we receive to the intent service unless we're running
         //  on a Zebra device
         if (!android.os.Build.MANUFACTURER.equalsIgnoreCase("Zebra Technologies") &&
                 !Build.MANUFACTURER.equalsIgnoreCase("Motorola Solutions"))
         {
-
             try {
+                //  Read the configured profiles and launch the DatawedgeLiteService to handle
+                //  whatever it is the caller wants to do
                 ArrayList<Profile> profiles = MainActivity.readProfiles(context);
                 if (profiles != null)
                 {
@@ -51,15 +52,13 @@ public class DatawedgeIntentReceiver extends BroadcastReceiver {
                             newIntent.putExtras(intent.getExtras());
                         newIntent.putExtra("activeProfilePosition", activeProfilePosition);
                         newIntent.putExtra("profiles", profiles);
-                        //newIntent.putExtra
+                        //  Start DatawedgeLiteService
                         context.startService(newIntent);
                     }
                 }
             } catch (IOException e) {
-                //e.printStackTrace();
                 Log.e(LOG_TAG, "Unable to read DataWedge profile, please configure an active profile");
             }catch (ClassNotFoundException e) {
-                //e.printStackTrace();
                 Log.e(LOG_TAG, "Unable to read DataWedge profile, please configure an active profile");
             }
 

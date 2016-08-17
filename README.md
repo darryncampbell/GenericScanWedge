@@ -7,7 +7,7 @@
 This application implements an Android service that provides a rudementary implementation of [Zebra's DataWedge](http://techdocs.zebra.com/datawedge/5-0/guide/about/) that can be run on non-Zebra devices, doing so allows the same user application to run on both Zebra and non-Zebra devices.
 
 The diagram below illustrates the goal where this service is illustrated in green.
-** Note that there is no support in this service for non-Zebra enterprise devices** 
+**Note that there is no support in this service for non-Zebra enterprise devices** 
 
 ![Architecture](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/wider_architecture.png?raw=true)
 

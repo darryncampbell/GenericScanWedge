@@ -8,7 +8,7 @@
     <string name="intent_mechanism_broadcast_intent">Broadcast intent</string>
     <string name="scanning_engine_zebra_crossing">ZXing</string>
     <string name="scanning_engine_google_vision">Google Vision</string>
-    <string name="profile_file_name">testFile</string>
+    <string name="profile_file_name">profiles_store</string>
     <string name="enumerate_scanners_action">com.symbol.datawedge.api.ACTION_ENUMERATEDSCANNERLIST</string>
     <string name="enumerate_scanners_key">DWAPI_KEY_ENUMERATEDSCANNERLIST</string>
 
