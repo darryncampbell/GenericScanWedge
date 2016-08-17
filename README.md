@@ -4,7 +4,7 @@
 
 ## What is this?
 
-This application implements an Android service that provides a rudementary implementation of [Zebra's DataWedge](http://techdocs.zebra.com/datawedge/5-0/guide/about/) that can be run on non-Zebra devices, doing so allows the same application to scan barcodes on both Zebra and non-Zebra devices.  For more background see the accompanying [Blog](https://darryncampbellblog.wordpress.com/2016/08/16/writing-enterprise-android-applications-that-capture-barcode-data-and-run-on-multiple-devices/)
+This application implements an Android service that provides a rudimentary implementation of [Zebra's DataWedge](http://techdocs.zebra.com/datawedge/5-0/guide/about/) that can be run on non-Zebra devices, doing so allows the same application to scan barcodes on both Zebra and non-Zebra devices.  For more background see the accompanying [Blog](https://darryncampbellblog.wordpress.com/2016/08/16/writing-enterprise-android-applications-that-capture-barcode-data-and-run-on-multiple-devices/)
 
 The diagram below illustrates the goal where this service is illustrated in green.
 **Note that there is no support in this service for non-Zebra enterprise mobile computers** 
