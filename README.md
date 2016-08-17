@@ -4,10 +4,10 @@
 
 ## What is this?
 
-This application implements an Android service that provides a rudementary implementation of [Zebra's DataWedge](http://techdocs.zebra.com/datawedge/5-0/guide/about/) that can be run on non-Zebra devices, doing so allows the same user application to run on both Zebra and non-Zebra devices.
+This application implements an Android service that provides a rudementary implementation of [Zebra's DataWedge](http://techdocs.zebra.com/datawedge/5-0/guide/about/) that can be run on non-Zebra devices, doing so allows the same application to scan barcodes on both Zebra and non-Zebra devices.  For more background see the accompanying [Blog](https://darryncampbellblog.wordpress.com/2016/08/16/writing-enterprise-android-applications-that-capture-barcode-data-and-run-on-multiple-devices/)
 
 The diagram below illustrates the goal where this service is illustrated in green.
-**Note that there is no support in this service for non-Zebra enterprise devices** 
+**Note that there is no support in this service for non-Zebra enterprise mobile computers** 
 
 ![Architecture](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/wider_architecture.png?raw=true)
 
@@ -23,8 +23,6 @@ This service supports barcode scanning on Android devices through:
 ## How to use
 Much like Zebra's DataWedge, this service relies on preconfigured 'Profiles' which define the scan engine configuration (e.g. which decoders are enabled or whether scanning is allowed).  Only one profile can be Enabled (i.e. active) at any one time.
 
-### Testing
-The easiest way to test this application is with the [DataWedge API Exerciser](https://github.com/darryncampbell/DataWedge-API-Exerciser).
 ### Profile Creation
 ![Screenshot 1](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/screen1.png?raw=true)
 
@@ -44,6 +42,9 @@ The easiest way to test this application is with the [DataWedge API Exerciser](h
 * **Intent Category**: The category that will be assigned to the intent sent to the calling application when a scan occurs.  To use with the [DataWedge API Exerciser](https://github.com/darryncampbell/DataWedge-API-Exerciser) leave this blank.
 * **Intent Delivery**: How to transmit the intent to the calling application when a barcode is scanned.  Either through startActivity(), sendBroadcast() or startService().
 * **Foreground flag**: Enabled for sendBroadcast() only, sets the FLAG_RECEIVER_FOREGROUND in the scan intent.
+
+### Testing
+The easiest way to test this application is with the [DataWedge API Exerciser](https://github.com/darryncampbell/DataWedge-API-Exerciser).
 
 ## Limitations
 
