@@ -1,4 +1,4 @@
-package com.zebra.datawedgelite.datawedgelite;
+package com.darryncampbell.genericscanwedge.genericscanwedge;
 
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity;
+import com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.BarcodeCaptureActivity;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
 
     private Profile activeProfile;
     private static final int RC_BARCODE_CAPTURE = 9001;
-    static final String LOG_TAG = "DWAPI Lite";
+    static final String LOG_TAG = "Generic Scan Wedge";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +38,9 @@ public class GoogleVisionBarcodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_hiddenactivity);
 
         activeProfile = (Profile) getIntent().getSerializableExtra("activeProfile");
-        Intent intent = new Intent(this, com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity.class);
-        intent.putExtra(com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity.AutoFocus, true);
-        intent.putExtra(com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.BarcodeCaptureActivity.UseFlash, true);
+        Intent intent = new Intent(this, com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.BarcodeCaptureActivity.class);
+        intent.putExtra(com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.BarcodeCaptureActivity.AutoFocus, true);
+        intent.putExtra(com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.BarcodeCaptureActivity.UseFlash, true);
         //  Added on top of the Google Barcode sample, supported decoders are flags.
         intent.putExtra("formats", giveSupportedDecoders());
         startActivityForResult(intent, RC_BARCODE_CAPTURE);

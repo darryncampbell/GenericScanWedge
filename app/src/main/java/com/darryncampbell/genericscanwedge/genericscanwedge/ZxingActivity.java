@@ -1,4 +1,4 @@
-package com.zebra.datawedgelite.datawedgelite;
+package com.darryncampbell.genericscanwedge.genericscanwedge;
 
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ZxingActivity extends AppCompatActivity {
 
     private Profile activeProfile;
-    static final String LOG_TAG = "DWAPI Lite";
+    static final String LOG_TAG = "Generic Scan Wedge";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

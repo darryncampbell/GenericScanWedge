@@ -1,4 +1,4 @@
-package com.zebra.datawedgelite.datawedgelite;
+package com.darryncampbell.genericscanwedge.genericscanwedge;
 
 import android.content.Context;
 import android.content.Intent;

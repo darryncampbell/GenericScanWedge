@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode;
+package com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -42,13 +42,13 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.CameraSource;
-import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.CameraSourcePreview;
-import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.GraphicOverlay;
+import com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.CameraSource;
+import com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.CameraSourcePreview;
+import com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.zebra.datawedgelite.datawedgelite.R;
+import com.darryncampbell.genericscanwedge.genericscanwedge.R;
 
 import java.io.IOException;
 

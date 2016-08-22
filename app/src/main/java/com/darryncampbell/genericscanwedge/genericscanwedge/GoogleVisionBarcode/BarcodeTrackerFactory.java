@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode;
+package com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode;
 
-import com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.GraphicOverlay;
+import com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;

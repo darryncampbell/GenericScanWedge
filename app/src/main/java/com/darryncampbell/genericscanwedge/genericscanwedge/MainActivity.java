@@ -1,4 +1,4 @@
-package com.zebra.datawedgelite.datawedgelite;
+package com.darryncampbell.genericscanwedge.genericscanwedge;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.ListView;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final String LOG_TAG = "DWAPI Lite";
+    static final String LOG_TAG = "Generic Scan Wedge";
     private ArrayList<Profile> profiles = new ArrayList<>();
     private ProfilesListAdapter profilesListAdapter;
 

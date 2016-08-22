@@ -8,16 +8,16 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.CameraSourcePreview
+    <com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.GraphicOverlay
+        <com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.GraphicOverlay
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera.CameraSourcePreview>
+    </com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera.CameraSourcePreview>
 
 </LinearLayout>

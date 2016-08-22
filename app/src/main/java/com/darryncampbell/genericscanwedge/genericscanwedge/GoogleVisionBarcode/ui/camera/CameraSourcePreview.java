@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zebra.datawedgelite.datawedgelite.GoogleVisionBarcode.ui.camera;
+package com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.ui.camera;
 
 import android.Manifest;
 import android.content.Context;

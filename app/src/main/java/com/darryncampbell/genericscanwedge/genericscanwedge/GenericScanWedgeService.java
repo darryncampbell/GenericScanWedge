@@ -1,4 +1,4 @@
-package com.zebra.datawedgelite.datawedgelite;
+package com.darryncampbell.genericscanwedge.genericscanwedge;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -8,9 +8,9 @@ import android.util.Log;
 import java.util.ArrayList;
 
 //  This service handles DataWedge API intents from the calling application
-public class DatawedgeLiteService extends IntentService {
+public class GenericScanWedgeService extends IntentService {
 
-    static final String LOG_TAG = "DWAPI Lite";
+    static final String LOG_TAG = "Generic Scan Wedge";
 
     //  As defined by the DataWedge API:
     //  Supported Intents that this service processes (these come from applications requesting to open the scanner)
@@ -24,8 +24,8 @@ public class DatawedgeLiteService extends IntentService {
     private static final String EXTRA_PARAMETER = "com.symbol.datawedge.api.EXTRA_PARAMETER";
     private static final String EXTRA_PROFILENAME = "com.symbol.datawedge.api.EXTRA_PROFILENAME";
 
-    public DatawedgeLiteService() {
-        super("DatawedgeLiteService");
+    public GenericScanWedgeService() {
+        super("GenericScanWedgeService");
     }
 
     @Override
@@ -145,7 +145,7 @@ public class DatawedgeLiteService extends IntentService {
         //  I have not implemented default profiles because we do not switch profiles dynamically
         //  depending on which application is shown so we don't have a notion of a 'default profile',
         //  it's just whichever profile is enabled.
-        Log.w(LOG_TAG, "Default Profile is not implemented in the Datawedge Lite Service.  Switching to specified profile");
+        Log.w(LOG_TAG, "Default Profile is not implemented in the generic scan wedge Service.  Switching to specified profile");
         handleSwitchToProfile(profileName, profiles, activeProfileIndex);
     }
 
@@ -154,7 +154,7 @@ public class DatawedgeLiteService extends IntentService {
         //  I have not implemented default profiles because we do not switch profiles dynamically
         //  depending on which application is shown so we don't have a notion of a 'default profile',
         //  it's just whichever profile is enabled.
-        Log.w(LOG_TAG, "Default Profile is not implemented in the Datawedge Lite Service.");
+        Log.w(LOG_TAG, "Default Profile is not implemented in the generic scan wedge Service.");
 
         //  Another thing, why does this this method take a profileName paramter?  I think the online docs are wrong.
     }

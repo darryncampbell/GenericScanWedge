@@ -1,4 +1,4 @@
-package com.zebra.datawedgelite.datawedgelite;
+package com.darryncampbell.genericscanwedge.genericscanwedge;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,17 +6,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 /**
  * Created by darry on 12/08/2016.
  */
-public class DatawedgeIntentReceiver extends BroadcastReceiver {
+public class GenericScanWedgeIntentReceiver extends BroadcastReceiver {
 
-    static final String LOG_TAG = "DWAPI Lite";
+    static final String LOG_TAG = "Generic Scan Wedge";
 
     //  This function is called when the Datawedge Intent API is called e.g. StartSoftScan.
     @Override
@@ -27,7 +25,7 @@ public class DatawedgeIntentReceiver extends BroadcastReceiver {
                 !Build.MANUFACTURER.equalsIgnoreCase("Motorola Solutions"))
         {
             try {
-                //  Read the configured profiles and launch the DatawedgeLiteService to handle
+                //  Read the configured profiles and launch the GenericScanWedgeService to handle
                 //  whatever it is the caller wants to do
                 ArrayList<Profile> profiles = MainActivity.readProfiles(context);
                 if (profiles != null)
@@ -46,13 +44,13 @@ public class DatawedgeIntentReceiver extends BroadcastReceiver {
                     {
                         //  We have successfully read in the configured profiles, find the active one
                         Log.d(LOG_TAG, "Active Profile: " + activeProfile.getName());
-                        Intent newIntent = new Intent(context, DatawedgeLiteService.class);
+                        Intent newIntent = new Intent(context, GenericScanWedgeService.class);
                         newIntent.setAction(intent.getAction());
                         if (intent.getExtras() != null)
                             newIntent.putExtras(intent.getExtras());
                         newIntent.putExtra("activeProfilePosition", activeProfilePosition);
                         newIntent.putExtra("profiles", profiles);
-                        //  Start DatawedgeLiteService
+                        //  Start GenericScanWedgeService
                         context.startService(newIntent);
                     }
                 }

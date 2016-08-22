@@ -1,4 +1,4 @@
-# DataWedgeLite
+# Generic Scan Wedge
 
 ###This application is provided without guarantee or warantee
 
@@ -9,7 +9,7 @@ This application implements an Android service that provides a rudimentary imple
 The diagram below illustrates the goal where this service is illustrated in green.
 **Note that there is no support in this service for non-Zebra enterprise mobile computers** 
 
-![Architecture](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/wider_architecture.png?raw=true)
+![Architecture](https://github.com/darryncampbell/GenericScanWedge/blob/master/doc/wider_architecture.png?raw=true)
 
 This service implements the [DataWedge Intent API](http://techdocs.zebra.com/datawedge/5-0/guide/api/) so a user application that makes use of this API can be ported to another device **without modification**.
 
@@ -24,13 +24,13 @@ This service supports barcode scanning on Android devices through:
 Much like Zebra's DataWedge, this service relies on preconfigured 'Profiles' which define the scan engine configuration (e.g. which decoders are enabled or whether scanning is allowed).  Only one profile can be Enabled (i.e. active) at any one time.
 
 ### Profile Creation
-![Screenshot 1](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/screen1.png?raw=true)
+![Screenshot 1](https://github.com/darryncampbell/GenericScanWedge/blob/master/doc/screen1.png?raw=true)
 
 * Add a profile using the action button, on first launch a default profile will be automatically created for you
 
 ### Profile Configuration
-![Screenshot 2](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/screen2.png?raw=true)
-![Screenshot 3](https://github.com/darryncampbell/DataWedgeLite/blob/master/doc/screen3.png?raw=true)
+![Screenshot 2](https://github.com/darryncampbell/GenericScanWedge/blob/master/doc/screen2.png?raw=true)
+![Screenshot 3](https://github.com/darryncampbell/GenericScanWedge/blob/master/doc/screen3.png?raw=true)
 
 * **Profile Name**: Change the default name assigned to the profile
 * **Profile Enabled**: Only one profile can be enabled at a time, this profile will be used to configure the scan engine when a scan is performed
