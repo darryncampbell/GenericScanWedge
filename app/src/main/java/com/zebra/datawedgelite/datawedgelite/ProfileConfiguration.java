@@ -247,7 +247,7 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
     }
 
 
-/*    @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -257,7 +257,7 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                 return super.onOptionsItemSelected(item);
         }
     }
-*/
+
     @Override
     public void onPause()
     {
