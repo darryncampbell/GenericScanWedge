@@ -1,6 +1,6 @@
 # Generic Scan Wedge
 
-###This application is provided without guarantee or warantee
+### This application is provided without guarantee or waranty
 
 ## What is this?
 
