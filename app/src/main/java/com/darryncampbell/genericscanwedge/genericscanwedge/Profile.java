@@ -58,7 +58,8 @@ public class Profile implements Serializable {
 
     public enum ScanningEngine {
         SCANNING_ENGINE_ZXING,
-        SCANNING_ENGINE_GOOGLE_VISION
+        SCANNING_ENGINE_GOOGLE_VISION,
+        SCANNING_ENGINE_BLUETOOTH_SPP
     }
 
     private String name;

@@ -8,6 +8,7 @@
     <string name="intent_mechanism_broadcast_intent">Broadcast intent</string>
     <string name="scanning_engine_zebra_crossing">ZXing</string>
     <string name="scanning_engine_google_vision">Google Vision</string>
+    <string name="scanning_engine_bluetooth_spp">Bluetooth Device (SPP)</string>
     <string name="profile_file_name">profiles_store</string>
     <string name="enumerate_scanners_action">com.symbol.datawedge.api.ACTION_ENUMERATEDSCANNERLIST</string>
     <string name="enumerate_scanners_key">DWAPI_KEY_ENUMERATEDSCANNERLIST</string>
@@ -21,6 +22,7 @@
     <string-array name="scanning_engines">
         <item>@string/scanning_engine_zebra_crossing</item>
         <item>@string/scanning_engine_google_vision</item>
+        <item>@string/scanning_engine_bluetooth_spp</item>
     </string-array>
 
     <!--  Imported from Google Vision Barcode Samples project -->
@@ -36,4 +38,14 @@
     <string name="barcode_failure">No barcode captured</string>
     <string name="barcode_error">"Error reading barcode: %1$s"</string>
     <!-- End imported from Google Vision Barcode Samples project -->
+
+    <!--  DeviceListActivity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+    <!--  End DeviceListActivity -->
 </resources>

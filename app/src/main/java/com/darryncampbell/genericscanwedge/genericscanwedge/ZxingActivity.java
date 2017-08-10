@@ -133,7 +133,7 @@ public class ZxingActivity extends AppCompatActivity {
 
     //  Work around for sending to a service.  Could probably be more intelligent here as just
     //  copied from stack overflow
-    private Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
         // Retrieve all services that can match the given intent
         PackageManager pm = context.getPackageManager();
         List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);

@@ -1,10 +1,18 @@
 package com.darryncampbell.genericscanwedge.genericscanwedge;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +22,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
 //  Logic underlying the profile configuration screen, accepts input from the user on what attributes
@@ -24,6 +34,11 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
     ArrayList<Profile> profiles;
     //  The position in the profiles array which corresponds with the profile we are to display
     int position;
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    static final String LOG_TAG = "Generic Scan Wedge";
+    int creating = 0;
+    static String lastConnectedMacAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +49,10 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        creating = 0;  //  This is horrible, I should really sort out when the listeners are added
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null)
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
         profiles = (ArrayList<Profile>)getIntent().getSerializableExtra("profileObjects");
         position = getIntent().getIntExtra("profilePosition", 0);
         Profile profile = profiles.get(position);
@@ -77,6 +96,9 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
             case SCANNING_ENGINE_GOOGLE_VISION:
                 spinnerScanningEngine.setSelection(1);
                 break;
+            case SCANNING_ENGINE_BLUETOOTH_SPP:
+                spinnerScanningEngine.setSelection(2);
+                break;
         }
         spinnerScanningEngine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -88,11 +110,25 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                 if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.scanning_engine_zebra_crossing)))
                 {
                     profiles.get(position).setScanningEngine(Profile.ScanningEngine.SCANNING_ENGINE_ZXING);
+                    if (profiles.get(position).getProfileEnabled())
+                        bluetoothDisconnectScanner(); //  Just in case
                 }
                 else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.scanning_engine_google_vision)))
                 {
                     profiles.get(position).setScanningEngine(Profile.ScanningEngine.SCANNING_ENGINE_GOOGLE_VISION);
+                    if (profiles.get(position).getProfileEnabled())
+                        bluetoothDisconnectScanner(); //  Just in case
                 }
+                else if (selectedMechanism.equalsIgnoreCase(getResources().getString(R.string.scanning_engine_bluetooth_spp)))
+                {
+                    profiles.get(position).setScanningEngine(Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP);
+                    if(profiles.get(position).getProfileEnabled() && creating >= 2)
+                    {
+                        //  User has selected the Bluetooth scanner for the currently enabled profile, connect to it
+                        bluetoothDiscoverScanners();
+                    }
+                }
+                creating++;
             }
 
             @Override
@@ -160,7 +196,15 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                 profiles.get(position).setIntentAction(s.toString());
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                if (profiles.get(position).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                {
+                    //  Changing this value will not be reflected on the BT scanner until you reconnect.  Could be
+                    //  more intelligent here but this logic is simple.
+                    if (profiles.get(position).getProfileEnabled())
+                        bluetoothDisconnectScanner();
+                }
+            }
         });
 
         EditText editTextIntentCategory = (EditText) findViewById(R.id.editIntentCategory);
@@ -172,7 +216,15 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                 profiles.get(position).setIntentCategory(s.toString());
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                if (profiles.get(position).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                {
+                    //  Changing this value will not be reflected on the BT scanner until you reconnect.  Could be
+                    //  more intelligent here but this logic is simple.
+                    if (profiles.get(position).getProfileEnabled())
+                        bluetoothDisconnectScanner();
+                }
+            }
         });
 
         final Spinner spinnerIntentOutputMechanism = (Spinner) findViewById(R.id.spinnerIntentOutputMechanism);
@@ -213,6 +265,17 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
                     profiles.get(position).setIntentDelivery(Profile.IntentDelivery.INTENT_DELIVERY_BROADCAST_INTENT);
                     enableReceiverForegroundFlagUI();
                 }
+
+                if (profiles.get(position).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                {
+                    //  Changing this value will not be reflected on the BT scanner until you reconnect.  Could be
+                    //  more intelligent here but this logic is simple.
+                    if (profiles.get(position).getProfileEnabled() && creating >= 2)
+                    {
+                        bluetoothDisconnectScanner();
+                    }
+                }
+                creating++;
             }
 
             @Override
@@ -222,8 +285,56 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
         CheckBox configureReceiverForegroundFlag = (CheckBox) findViewById(R.id.checkConfigureReceiveForegroundFlag);
         configureReceiverForegroundFlag.setChecked(this.profiles.get(position).getReceiverForegroundFlag());
         configureReceiverForegroundFlag.setOnCheckedChangeListener(this);
-
     }
+
+    private void bluetoothDiscoverScanners() {
+        if (mBluetoothAdapter == null)
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+        else
+        {
+            Intent serverIntent = new Intent(this, DeviceListActivity.class);
+            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+        }
+    }
+
+    private void bluetoothDisconnectScanner() {
+        //  Disconnect the connected bluetooth scanner if there is one
+        Intent bluetoothConnectionDisconnectIntent = new Intent(this, BluetoothConnectionService.class);
+        bluetoothConnectionDisconnectIntent.setAction(BluetoothConnectionService.ACTION_DISCONNECT);
+        startService(bluetoothConnectionDisconnectIntent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    //  Find the active profile
+                    Profile activeProfile = null;
+                    for (int i = 0; i < profiles.size(); i++) {
+                        if (profiles.get(i).getProfileEnabled()) {
+                            activeProfile = profiles.get(i);
+                            break;
+                        }
+                    }
+
+                    // Get the device MAC address
+                    String address = data.getExtras()
+                            .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    lastConnectedMacAddress = address;
+
+                    Intent bluetoothConnectionConnectIntent = new Intent(this, BluetoothConnectionService.class);
+                    bluetoothConnectionConnectIntent.setAction(BluetoothConnectionService.ACTION_CONNECT);
+                    bluetoothConnectionConnectIntent.putExtra("macAddress", address);
+                    bluetoothConnectionConnectIntent.putExtra("activeProfile", activeProfile);
+                    startService(bluetoothConnectionConnectIntent);
+
+                }
+                break;
+        }
+    }
+
 
     //  The receiver foreground flag checkbox and UI should only be shown if the user has selected sendBroadcast()
     private void disableReceiverForegroundFlagUI()
@@ -275,60 +386,86 @@ public class ProfileConfiguration extends AppCompatActivity implements CompoundB
 
     //  Same logic for handling all decoder enabled? checkboxes
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
         switch(compoundButton.getId()){
             case R.id.checkProfileEnabled:
                 //  Only one profile can be enabled at a time in this limited implementation of DW profiles,
                 //  therefore disable all other profiles
-                if (b)
+                if (checked)
                 {
                     for (int i = 0; i < this.profiles.size(); i++)
+                    {
+                        if (i == this.position)
+                            continue;
                         this.profiles.get(i).setProfileEnabled(false);
+                        //  Disconnect any Bluetooth scanners associated with that profile
+                        if (this.profiles.get(i).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                        {
+                            bluetoothDisconnectScanner();
+                        }
+                    }
                 }
-                this.profiles.get(this.position).setProfileEnabled(b);
+                this.profiles.get(this.position).setProfileEnabled(checked);
+                //  Connect to the bluetooth scanner if the SPP engine is enabled
+                if (checked && this.profiles.get(this.position).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                {
+                    bluetoothDiscoverScanners();
+                }
+                else if (!checked && this.profiles.get(this.position).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                {
+                    bluetoothDisconnectScanner();
+                }
                 break;
             case R.id.checkConfigureProfileBarcodeEnabled:
-                this.profiles.get(this.position).setBarcodeInputEnabled(b);
+                this.profiles.get(this.position).setBarcodeInputEnabled(checked);
                 break;
             case R.id.checkConfigureProfileBarcodeUPCA:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_UPCA, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_UPCA, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeUPCE:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_UPCE, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_UPCE, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeEan8:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_EAN8, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_EAN8, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeEan13:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_EAN13, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_EAN13, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeRSS14:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_RSS14, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_RSS14, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeCode39:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_39, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_39, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeCode93:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_93, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_93, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeCode128:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_128, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_CODE_128, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeITF:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_ITF, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_ITF, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeRSSExpanded:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_RSS_Expanded, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_RSS_Expanded, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeQRCode:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_QR_CODE, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_QR_CODE, checked);
                 break;
             case R.id.checkConfigureProfileBarcodeDataMatrix:
-                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_DATA_MATRIX, b);
+                this.profiles.get(this.position).setDecodersEnabled(Profile.DECODER_DATA_MATRIX, checked);
                break;
             case R.id.checkConfigureReceiveForegroundFlag:
-                this.profiles.get(this.position).setReceiverForegroundFlag(b);
+                this.profiles.get(this.position).setReceiverForegroundFlag(checked);
+                if (profiles.get(position).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+                {
+                    //  Changing this value will not be reflected on the BT scanner until you reconnect.  Could be
+                    //  more intelligent here but this logic is simple.
+                    bluetoothDisconnectScanner();
+                }
                 break;
         }
     }
+
+
 }

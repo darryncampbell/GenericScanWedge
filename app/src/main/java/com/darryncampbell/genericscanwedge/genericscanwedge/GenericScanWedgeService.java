@@ -24,6 +24,8 @@ public class GenericScanWedgeService extends IntentService {
     private static final String EXTRA_PARAMETER = "com.symbol.datawedge.api.EXTRA_PARAMETER";
     private static final String EXTRA_PROFILENAME = "com.symbol.datawedge.api.EXTRA_PROFILENAME";
 
+    private static final int NO_ACTIVE_PROFILE = -1;
+
     public GenericScanWedgeService() {
         super("GenericScanWedgeService");
     }
@@ -35,17 +37,32 @@ public class GenericScanWedgeService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             final ArrayList<Profile> profiles = (ArrayList<Profile>) intent.getSerializableExtra("profiles");
-            final int activeProfilePosition = intent.getIntExtra("activeProfilePosition", -1);
-            Profile activeProfile = profiles.get(activeProfilePosition);
+            final int activeProfilePosition = intent.getIntExtra("activeProfilePosition", NO_ACTIVE_PROFILE);
+            Profile activeProfile = null;
+            if (activeProfilePosition != NO_ACTIVE_PROFILE)
+                    activeProfile = profiles.get(activeProfilePosition);
             if (ACTION_SOFTSCANTRIGGER.equals(action))
             {
-                final String param = intent.getStringExtra(EXTRA_PARAMETER);
-                handleActionSoftScanTrigger(param, activeProfile);
+                if (activeProfilePosition == NO_ACTIVE_PROFILE) {
+                    Log.e(LOG_TAG, "No Active profile currently defined and enabled.  No barcode will be scanned");
+                }
+                else
+                {
+                    final String param = intent.getStringExtra(EXTRA_PARAMETER);
+                    handleActionSoftScanTrigger(param, activeProfile);
+                }
             }
             else if (ACTION_SCANNERINPUTPLUGIN.equals(action))
             {
-                final String param = intent.getStringExtra(EXTRA_PARAMETER);
-                handleScannerInputPlugin(param, profiles, activeProfilePosition);
+                if (activeProfilePosition == NO_ACTIVE_PROFILE)
+                {
+                    Log.e(LOG_TAG, "No Active profile currently defined and enabled.  No barcode will be enabled");
+                }
+                else
+                {
+                    final String param = intent.getStringExtra(EXTRA_PARAMETER);
+                    handleScannerInputPlugin(param, profiles, activeProfilePosition);
+                }
             }
             else if (ACTION_ENUMERATESCANNERS.equals(action))
             {
@@ -92,6 +109,12 @@ public class GenericScanWedgeService extends IntentService {
                 googleVisionActivity.putExtra("activeProfile", activeProfile);
                 startActivity(googleVisionActivity);
             }
+            else if (activeProfile.getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP) {
+                //  Start Scanning has no effect on a bluetooth connected scanner, expectation is that
+                //  scanner has a hardware trigger and the scanner itself does not support soft scans
+                //  through the BT interface
+                Log.w(LOG_TAG, "START_SCANNING is not implemented for BT scanners connected over SPP");
+            }
         }
         else if (param.equals("STOP_SCANNING"))
         {
@@ -132,8 +155,9 @@ public class GenericScanWedgeService extends IntentService {
     private void handleEnumerateScanners() {
         Intent enumerateBarcodesIntent = new Intent();
         enumerateBarcodesIntent.setAction(getResources().getString(R.string.enumerate_scanners_action));
-        String[] scanner_list = new String[1];
+        String[] scanner_list = new String[2];
         scanner_list[0] = "Camera Scanner";
+        scanner_list[1] = "Bluetooth Scanner (SPP)";
         Bundle bundle = new Bundle();
         bundle.putStringArray(getResources().getString(R.string.enumerate_scanners_key), scanner_list);
         enumerateBarcodesIntent.putExtras(bundle);
@@ -165,17 +189,36 @@ public class GenericScanWedgeService extends IntentService {
         Log.d(LOG_TAG, "Switching to profile: " + param);
         //  Change the enabled profile to the specified profile name
         boolean bFoundProfile = false;
+        int enabledProfileIndex = -1;
         for (int i = 0; i < profiles.size(); i++)
         {
             if (profiles.get(i).getName().equalsIgnoreCase(param))
             {
-                profiles.get(activeProfileIndex).setProfileEnabled(false);
+                if (activeProfileIndex != NO_ACTIVE_PROFILE)
+                    profiles.get(activeProfileIndex).setProfileEnabled(false);
                 profiles.get(i).setProfileEnabled(true);
                 bFoundProfile = true;
+                enabledProfileIndex = i;
             }
         }
         if (bFoundProfile)
+        {
             MainActivity.saveProfiles(profiles, getApplicationContext());
+            //  If we are switching to a profile which uses the Serial Port Profile then try to connect
+            //  to the scanner if it was previously connected
+            if (profiles.get(enabledProfileIndex).getScanningEngine() == Profile.ScanningEngine.SCANNING_ENGINE_BLUETOOTH_SPP)
+            {
+                String address = ProfileConfiguration.lastConnectedMacAddress;
+                if (address != null)
+                {
+                    Intent bluetoothConnectionConnectIntent = new Intent(this, BluetoothConnectionService.class);
+                    bluetoothConnectionConnectIntent.setAction(BluetoothConnectionService.ACTION_CONNECT);
+                    bluetoothConnectionConnectIntent.putExtra("macAddress", address);
+                    bluetoothConnectionConnectIntent.putExtra("activeProfile", profiles.get(enabledProfileIndex));
+                    startService(bluetoothConnectionConnectIntent);
+                }
+            }
+        }
         else
         {
             Log.w(LOG_TAG, "Unrecognised profile to switch to: " + param);

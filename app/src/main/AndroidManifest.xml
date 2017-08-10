@@ -5,6 +5,8 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <application
         android:allowBackup="true"
@@ -41,13 +43,13 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="com.darryncampbell.genericscanwedge.genericscanwedge.ZxingActivity" />
-        <activity android:name="com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcodeActivity" />
-        <activity android:name="com.darryncampbell.genericscanwedge.genericscanwedge.GoogleVisionBarcode.BarcodeCaptureActivity"
-            android:label="Read Barcode"/>
-
+        <activity android:name=".ZxingActivity" />
+        <activity android:name=".GoogleVisionBarcodeActivity" />
         <activity
-            android:name="com.darryncampbell.genericscanwedge.genericscanwedge.MainActivity"
+            android:name=".GoogleVisionBarcode.BarcodeCaptureActivity"
+            android:label="Read Barcode" />
+        <activity
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -57,9 +59,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.darryncampbell.genericscanwedge.genericscanwedge.ProfileConfiguration"
+            android:name=".ProfileConfiguration"
             android:label="@string/title_activity_profile_configuration"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DeviceListActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/select_device"
+            android:theme="@android:style/Theme.DeviceDefault.Dialog" />
+
+        <service
+            android:name=".BluetoothConnectionService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

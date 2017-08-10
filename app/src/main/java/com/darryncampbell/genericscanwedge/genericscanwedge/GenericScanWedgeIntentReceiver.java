@@ -32,27 +32,24 @@ public class GenericScanWedgeIntentReceiver extends BroadcastReceiver {
                 {
                     Profile activeProfile = null;
                     int activeProfilePosition = -1;
-                    for (int i = 0; i < profiles.size(); i++)
+                    for (int i = 0; i < profiles.size(); i++) {
                         if (profiles.get(i).getProfileEnabled()) {
                             activeProfile = profiles.get(i);
                             activeProfilePosition = i;
                             break;
                         }
-                    if (activeProfile == null)
-                        Log.e(LOG_TAG, "No Active profile currently defined and enabled.  No barcode will be scanned");
-                    else
-                    {
-                        //  We have successfully read in the configured profiles, find the active one
-                        Log.d(LOG_TAG, "Active Profile: " + activeProfile.getName());
-                        Intent newIntent = new Intent(context, GenericScanWedgeService.class);
-                        newIntent.setAction(intent.getAction());
-                        if (intent.getExtras() != null)
-                            newIntent.putExtras(intent.getExtras());
-                        newIntent.putExtra("activeProfilePosition", activeProfilePosition);
-                        newIntent.putExtra("profiles", profiles);
-                        //  Start GenericScanWedgeService
-                        context.startService(newIntent);
                     }
+                    //  We have successfully read in the configured profiles, find the active one
+                    if (activeProfile != null)
+                        Log.d(LOG_TAG, "Active Profile: " + activeProfile.getName());
+                    Intent newIntent = new Intent(context, GenericScanWedgeService.class);
+                    newIntent.setAction(intent.getAction());
+                    if (intent.getExtras() != null)
+                        newIntent.putExtras(intent.getExtras());
+                    newIntent.putExtra("activeProfilePosition", activeProfilePosition);
+                    newIntent.putExtra("profiles", profiles);
+                    //  Start GenericScanWedgeService
+                    context.startService(newIntent);
                 }
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Unable to read DataWedge profile, please configure an active profile");
